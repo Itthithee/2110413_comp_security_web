@@ -50,6 +50,7 @@ const PostList: React.FC = ({ postList }: any) => {
 							</Card>
 							<input placeholder="comment" ref={newComment}/>
 						</Form.Field>
+						<Button>Comment</Button>
 					</Form>
 				</Card.Content>
 			</Card>
