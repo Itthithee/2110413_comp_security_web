@@ -1,6 +1,6 @@
 FROM node:alpine
-WORKDIR /front
-COPY . /front
+WORKDIR /back
+COPY . /back
 RUN yarn install
-EXPOSE 3000
+EXPOSE 5000
 CMD yarn start :dev
