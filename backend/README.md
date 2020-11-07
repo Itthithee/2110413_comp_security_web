@@ -74,23 +74,3 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
   Nest is [MIT licensed](LICENSE).
   
-  
-## Docker Compose
-
-To start docker compose :
-
-```bash
-$ docker-compose up
-```
-
-To stop docker compose :
-
-```bash
-$ docker-compose down
-```
-
-## PS1 
-*** Don't panic if you see a bunch of warning when you first build container (most of it is about dependency) ***
-
-## PS2
-*** url : localhost:4000/ ***
