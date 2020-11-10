@@ -58,7 +58,7 @@ const PostList: React.FC = ({ postList }: any) => {
 							</CommentCard>
 							<Grid.Row style={{display: 'flex'}}>
 								<input placeholder="comment" ref={newComment}/>
-								<Button style={{marginLeft: '10px', width: '10%'}}>Comment</Button>
+								<Button style={{marginLeft: '10px'}}>Comment</Button>
 							</Grid.Row>
 						</Form.Field>				
 					</Form>
