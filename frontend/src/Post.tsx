@@ -7,12 +7,20 @@ import {
 	Transition,
 	Form,
 	Button,
-	Header
+	Header,
+	GridRow,
+	GridColumn
 } from "semantic-ui-react"
 
 const PostList: React.FC = ({ postList }: any) => {
 	const Label = styled.label`
 		text-align: left;
+	`;
+	const PostCard = styled(Card)`
+		width: 60% !important;
+	`;
+	const CommentCard = styled(Card)`
+		width: 100% !important;
 	`;
 	const Content = styled(Card.Content)`
 		text-align: left;
@@ -38,22 +46,24 @@ const PostList: React.FC = ({ postList }: any) => {
 	let elements = [];
 	for(let i=0;i<testList.length;i++){
 		elements.push(
-			<Card centered>
+			<PostCard centered>
 				<Card.Content>
 					<Form>
 						<Form.Field>
 							<Label>{ testList[i].post }.</Label>
-							<Card>
+							<CommentCard>
 								<Content>
 									<Label>{ testList[i].comment }.</Label>
 								</Content>
-							</Card>
-							<input placeholder="comment" ref={newComment}/>
-						</Form.Field>
-						<Button>Comment</Button>
+							</CommentCard>
+							<Grid.Row style={{display: 'flex'}}>
+								<input placeholder="comment" ref={newComment}/>
+								<Button style={{marginLeft: '10px', width: '10%'}}>Comment</Button>
+							</Grid.Row>
+						</Form.Field>				
 					</Form>
 				</Card.Content>
-			</Card>
+			</PostCard>
 		)
 	}
 
