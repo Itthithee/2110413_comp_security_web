@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import {
@@ -8,11 +8,53 @@ import {
 	Form,
 	Button,
 	Header,
-	GridRow,
-	GridColumn
 } from "semantic-ui-react"
 
-const PostList: React.FC = ({ postList }: any) => {
+interface CommentListProp{
+	comments: string[];
+}
+
+interface PostItem{
+	post: string;
+	comments: string[];
+}
+
+interface postListProp{
+	postList: PostItem[];
+}
+
+const CommentList: React.FC<CommentListProp> = (props) => {
+	const Label = styled.label`
+		text-align: left;
+	`;
+	const PostCard = styled(Card)`
+		width: 60% !important;
+	`;
+	const CommentCard = styled(Card)`
+		width: 100% !important;
+	`;
+	const Content = styled(Card.Content)`
+		text-align: left;
+	`;
+	let elements = [];
+	for(let i=0;i<props.comments.length;i++){
+		elements.push(
+			<CommentCard>
+				<Content>
+					<Label>{ props.comments[i] }.</Label>
+				</Content>
+			</CommentCard>
+		)
+	}
+	
+	return (
+		<>
+			{elements}
+		</>
+	)
+}
+
+const PostList: React.FC<postListProp> = (props) => {
 	const Label = styled.label`
 		text-align: left;
 	`;
@@ -27,35 +69,15 @@ const PostList: React.FC = ({ postList }: any) => {
 	`;
 	const newComment = useRef<HTMLInputElement>(null)
 
-	let testList = [{
-										"post": "p1",
-										"comment": "c1"
-									}, 
-									{
-										"post": "p2",
-										"comment": "c2"
-									},
-									{
-										"post": "p3",
-										"comment": "c3"
-									},
-									{
-										"post": "p4",
-										"comment": "c4"
-									}];
 	let elements = [];
-	for(let i=0;i<testList.length;i++){
+	for(let i=0;i<props.postList.length;i++){
 		elements.push(
 			<PostCard centered>
 				<Card.Content>
 					<Form>
 						<Form.Field>
-							<Label>{ testList[i].post }.</Label>
-							<CommentCard>
-								<Content>
-									<Label>{ testList[i].comment }.</Label>
-								</Content>
-							</CommentCard>
+							<Label>{ props.postList[i].post }.</Label>
+							<CommentList comments={props.postList[i].comments}/>
 							<Grid.Row style={{display: 'flex'}}>
 								<input placeholder="comment" ref={newComment}/>
 								<Button style={{marginLeft: '10px'}}>Comment</Button>
@@ -75,12 +97,26 @@ const PostList: React.FC = ({ postList }: any) => {
 };
 
 export const Post: React.FC = () => {
+	const [count, setCount] = useState(0);
+	let testList = [{
+		"post": "p1",
+		"comments": ["c1", "c2"]
+	}, 
+	{
+		"post": "p2",
+		"comments": ["c3", "c4"]
+	}];
+	const [postList, setPostList] = useState(testList);
 	const Label = styled.label`
 		text-align: left;
 	`;
 	const MyGrid = styled(Grid)`
 		padding-top: 10% !important;
 	`;
+	
+	useEffect(() => {
+		setPostList(testList);
+	}, [count, postList]);
 
 	return (
 		<>
@@ -89,8 +125,8 @@ export const Post: React.FC = () => {
 					<Transition>
 						<>
 							<Header>Post</Header>
-							<PostList/>
-							<Button>Logout</Button>
+							<PostList postList={postList}/>
+							<Button onClick={() => setCount(count + 1)}>Logout {count}</Button>
 						</>			
 					</Transition>
 				</Grid.Column>
@@ -98,3 +134,4 @@ export const Post: React.FC = () => {
 		</>
 	);
 }
+
