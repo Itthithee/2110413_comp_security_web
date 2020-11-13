@@ -11,7 +11,7 @@ import {
 	GridRow,
 	GridColumn
 } from "semantic-ui-react"
-
+import {useCookies} from "react-cookie"
 const PostList: React.FC = ({ postList }: any) => {
 	const Label = styled.label`
 		text-align: left;
@@ -81,7 +81,10 @@ export const Post: React.FC = () => {
 	const MyGrid = styled(Grid)`
 		padding-top: 10% !important;
 	`;
-
+	const [cookies, setCookie,removeCookie] = useCookies(['token']);
+	const logout = () =>{
+	  removeCookie('token',{path:'/'})
+	}
 	return (
 		<>
 			<MyGrid>
@@ -90,7 +93,7 @@ export const Post: React.FC = () => {
 						<>
 							<Header>Post</Header>
 							<PostList/>
-							<Button>Logout</Button>
+							<Button onClick={logout}>Logout</Button>
 						</>			
 					</Transition>
 				</Grid.Column>
