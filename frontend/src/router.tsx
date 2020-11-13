@@ -1,16 +1,20 @@
-import React, { useContext, createContext, useState } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Route,
-  Link,
   Switch,
   Redirect,
-  useLocation
 } from "react-router-dom";
+import { useCookies } from 'react-cookie';
 import { Login } from "./Login";
-const authContext: any = createContext();
+
 const useAuth = () => {
-  return useContext(authContext);
+  const [cookies, setCookie] = useCookies(['token']);
+  if(cookies.token === "accessed"){
+    console.log("accessed")
+    return true
+  }
+  return false;
 };
 const PrivateRoute = ({ children, ...rest }: any) => {
   let auth = useAuth();
@@ -18,7 +22,7 @@ const PrivateRoute = ({ children, ...rest }: any) => {
     <Route
       {...rest}
       render={({ location }) =>
-        auth.user ? (
+        auth ? (
           children
         ) : (
           <Redirect
@@ -32,6 +36,14 @@ const PrivateRoute = ({ children, ...rest }: any) => {
     />
   );
 };
+
+const FakeHome : React.FC = () => {
+  const [cookies, setCookie,removeCookie] = useCookies(['token']);
+  const onClick = () =>{
+    removeCookie('token',{path:'/'})
+  }
+  return(<><button onClick={onClick}>logout</button></>)
+}
 const WebRouter: React.FC = () => {
   return (
     <Router>
@@ -39,9 +51,9 @@ const WebRouter: React.FC = () => {
         <Route exact path="/login">
           <Login />
         </Route>
-        <Route path="/home">
-          <div>aaaa</div>
-        </Route>
+        <PrivateRoute path="/home">
+          <FakeHome/>
+        </PrivateRoute>
         <Route path="*">
           <div>404 not found</div>
         </Route>
