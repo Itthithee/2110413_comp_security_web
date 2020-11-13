@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import https from "https";
 
 import {
 	Grid,
@@ -14,6 +13,7 @@ import {
 
 interface CommentListProp{
 	comments: string[];
+	hover: boolean;
 }
 
 interface PostItem{
@@ -25,6 +25,7 @@ interface postListProp{
 	postList: PostItem[];
 }
 
+
 const CommentList: React.FC<CommentListProp> = (props) => {
 	const Label = styled.label`
 		text-align: left;
@@ -32,16 +33,44 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 	const CommentCard = styled(Card)`
 		width: 100% !important;
 	`;
-	const Content = styled(Card.Content)`
+	const ContentLeft = styled(Card.Content)`
 		text-align: left;
 	`;
+	const ContentRight = styled(Card.Content)`
+		text-align: right;
+	`;
+	const HoverText = styled.label`
+		text-align: right;
+		font-size: 12px;
+		margin: 10px;
+		&:hover {
+			color: lightBlue;
+		}
+	`;
+	const newComment = useRef<HTMLInputElement>(null)
 	let elements = [];
+	
 	for(let i=0;i<props.comments.length;i++){
 		elements.push(
 			<CommentCard>
-				<Content>
-					<Label>{ props.comments[i] }.</Label>
-				</Content>
+				<ContentLeft>
+					<Label>{ props.comments[i] }</Label>	
+				</ContentLeft>
+				{(() => {
+					if (i==1) {
+						return <ContentRight>
+							<Form>
+								<Form.Field>
+									<Grid.Row style={{display: 'flex'}}>
+										<input placeholder="edit" ref={newComment}/>
+										<HoverText onClick={() => console.log(i)}>Edit</HoverText>
+										<HoverText>Delete</HoverText>
+									</Grid.Row>
+								</Form.Field>				
+							</Form>
+						</ContentRight>
+					}
+				})()}
 			</CommentCard>
 		)
 	}
@@ -52,6 +81,7 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 		</>
 	)
 }
+
 
 const PostList: React.FC<postListProp> = (props) => {
 	const Label = styled.label`
@@ -70,7 +100,7 @@ const PostList: React.FC<postListProp> = (props) => {
 					<Form>
 						<Form.Field>
 							<Label>{ props.postList[i].post }.</Label>
-							<CommentList comments={props.postList[i].comments}/>
+							<CommentList comments={props.postList[i].comments} hover={false}/>
 							<Grid.Row style={{display: 'flex'}}>
 								<input placeholder="comment" ref={newComment}/>
 								<Button style={{marginLeft: '10px'}}>Comment</Button>
@@ -88,6 +118,7 @@ const PostList: React.FC<postListProp> = (props) => {
 		</>
 	)
 };
+
 
 export const Post: React.FC = () => {
 	let testList = [{
@@ -119,7 +150,7 @@ export const Post: React.FC = () => {
 		}
 
 		fetchData();
-	}, [testId]);
+	}, []);
 
 	return (
 		<>
