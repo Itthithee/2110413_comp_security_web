@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
+import https from "https";
 
 import {
 	Grid,
@@ -26,9 +28,6 @@ interface postListProp{
 const CommentList: React.FC<CommentListProp> = (props) => {
 	const Label = styled.label`
 		text-align: left;
-	`;
-	const PostCard = styled(Card)`
-		width: 60% !important;
 	`;
 	const CommentCard = styled(Card)`
 		width: 100% !important;
@@ -61,12 +60,6 @@ const PostList: React.FC<postListProp> = (props) => {
 	const PostCard = styled(Card)`
 		width: 60% !important;
 	`;
-	const CommentCard = styled(Card)`
-		width: 100% !important;
-	`;
-	const Content = styled(Card.Content)`
-		text-align: left;
-	`;
 	const newComment = useRef<HTMLInputElement>(null)
 
 	let elements = [];
@@ -97,7 +90,6 @@ const PostList: React.FC<postListProp> = (props) => {
 };
 
 export const Post: React.FC = () => {
-	const [count, setCount] = useState(0);
 	let testList = [{
 		"post": "p1",
 		"comments": ["c1", "c2"]
@@ -107,6 +99,8 @@ export const Post: React.FC = () => {
 		"comments": ["c3", "c4"]
 	}];
 	const [postList, setPostList] = useState(testList);
+	const [testId, setTestId] = useState(1);
+
 	const Label = styled.label`
 		text-align: left;
 	`;
@@ -115,8 +109,17 @@ export const Post: React.FC = () => {
 	`;
 	
 	useEffect(() => {
-		setPostList(testList);
-	}, [count, postList]);
+		const fetchData = async () => {
+			const result = await axios({
+				method: "get",
+				baseURL: process.env.REACT_APP_BACKEND_URL,
+				url: "/users/id/" + testId
+			})
+			setPostList([{post: result.data.username, comments: [result.data.userId, result.data.password]}]);
+		}
+
+		fetchData();
+	}, [testId]);
 
 	return (
 		<>
@@ -126,7 +129,7 @@ export const Post: React.FC = () => {
 						<>
 							<Header>Post</Header>
 							<PostList postList={postList}/>
-							<Button onClick={() => setCount(count + 1)}>Logout {count}</Button>
+							<Button onClick={() => setTestId(testId>2? 1: testId+1)}>Logout {testId}</Button>
 						</>			
 					</Transition>
 				</Grid.Column>
