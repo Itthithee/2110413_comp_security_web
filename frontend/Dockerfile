@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:14.15.0-alpine
 WORKDIR /front
 COPY . /front
 RUN yarn install
