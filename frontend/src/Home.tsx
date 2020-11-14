@@ -93,41 +93,41 @@ const Comment: React.FC<CommentProp> = (props) => {
 	}
 
 	return <CommentCard>
-				<ContentLeft>
+		<ContentLeft>
+			{(() => {
+				if(isEditting){
+					return <Form>
+						<Form.Field>
+							<Grid.Row style={{display: 'flex'}}>
+								<input placeholder={ props.comment } ref={edittedComment}/>
+								<Button style={{marginLeft: '10px'}} onClick={confirmEditComment}>Edit</Button>
+							</Grid.Row>
+						</Form.Field>
+					</Form>
+				} else {
+					return <Label>{ props.comment }</Label>
+				}
+			})()}
+		</ContentLeft>
+		{(() => {
+			if (true) { //check if is owner of comment OR is moderator
+				return <ContentRight>
+					<HoverText onClick={() => editComment(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
 					{(() => {
-						if(isEditting){
-							return <Form>
-								<Form.Field>
-									<Grid.Row style={{display: 'flex'}}>
-										<input placeholder={ props.comment } ref={edittedComment}/>
-										<Button style={{marginLeft: '10px'}} onClick={confirmEditComment}>Edit</Button>
-									</Grid.Row>
-								</Form.Field>
-							</Form>
+						if (isDeleting) {
+							return <>
+								<Label>Are you sore you want to delete this comment?</Label>
+								<HoverText onClick={() => confirmDeleteComment()}>Yes</HoverText>
+								<HoverText onClick={() => deleteComment(!isDeleting)}>No</HoverText>
+							</>
 						} else {
-							return <Label>{ props.comment }</Label>
+							return <HoverText onClick={() => deleteComment(!isDeleting)}>Delete</HoverText>
 						}
 					})()}
-				</ContentLeft>
-				{(() => {
-					if (true) { //check if is owner of comment OR is moderator
-						return <ContentRight>
-							<HoverText onClick={() => editComment(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
-							{(() => {
-								if (isDeleting) {
-									return <>
-										<Label>Are you sore you want to delete this comment?</Label>
-										<HoverText onClick={() => confirmDeleteComment()}>Yes</HoverText>
-										<HoverText onClick={() => deleteComment(!isDeleting)}>No</HoverText>
-									</>
-								} else {
-									return <HoverText onClick={() => deleteComment(!isDeleting)}>Delete</HoverText>
-								}
-							})()}
-						</ContentRight>
-					}
-				})()}
-			</CommentCard>
+				</ContentRight>
+			}
+		})()}
+	</CommentCard>
 }
 
 const CommentList: React.FC<CommentListProp> = (props) => {
@@ -202,55 +202,62 @@ const Post: React.FC<PostProp> = (props) => {
 		setDummyState(!dummyState);
 	}
 
-	return <PostCard centered>
-	<ContentLeft>
-		{(() => {
-			if(isEditting){
-				return <Form>
+	return <Transition
+	mountOnShow
+	transitionOnMount
+	animation="fade down"
+	duration={600}
+	> 
+		<PostCard centered>
+			<ContentLeft>
+				{(() => {
+					if(isEditting){
+						return <Form>
+							<Form.Field>
+								<Grid.Row style={{display: 'flex'}}>
+									<input placeholder={ props.post } ref={edittedPost}/>
+									<Button style={{marginLeft: '10px'}} onClick={confirmEditPost}>Edit</Button>
+								</Grid.Row>
+							</Form.Field>
+						</Form>
+					} else {
+						return <Label>{ props.post }</Label>
+					}
+				})()}
+			</ContentLeft>
+			<ContentRight>
+				{(() => {
+					if (true) { //check if is owner of post OR is moderator
+						return <ContentRight>
+								<HoverText onClick={() => editPost(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
+							{(() => {
+								if (isDeleting) {
+									return <>
+										<Label>Are you sore you want to delete this post?</Label>
+										<HoverText onClick={() => confirmDeletePost()}>Yes</HoverText>
+										<HoverText onClick={() => deletePost(!isDeleting)}>No</HoverText>
+									</>
+								} else {
+									return <HoverText onClick={() => deletePost(!isDeleting)}>Delete</HoverText>
+								}
+							})()}
+						</ContentRight>
+					}
+				})()}
+			</ContentRight>
+			<ContentLeft>
+				<Form>
 					<Form.Field>
+						<CommentList comments={props.comments}/>
 						<Grid.Row style={{display: 'flex'}}>
-							<input placeholder={ props.post } ref={edittedPost}/>
-							<Button style={{marginLeft: '10px'}} onClick={confirmEditPost}>Edit</Button>
+							<input placeholder="comment" ref={newComment}/>
+							<Button style={{marginLeft: '10px'}} onClick={writeComment}>Comment</Button>
 						</Grid.Row>
-					</Form.Field>
+					</Form.Field>				
 				</Form>
-			} else {
-				return <Label>{ props.post }</Label>
-			}
-		})()}
-	</ContentLeft>
-	<ContentRight>
-		{(() => {
-			if (true) { //check if is owner of post OR is moderator
-				return <ContentRight>
-						<HoverText onClick={() => editPost(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
-					{(() => {
-						if (isDeleting) {
-							return <>
-								<Label>Are you sore you want to delete this post?</Label>
-								<HoverText onClick={() => confirmDeletePost()}>Yes</HoverText>
-								<HoverText onClick={() => deletePost(!isDeleting)}>No</HoverText>
-							</>
-						} else {
-							return <HoverText onClick={() => deletePost(!isDeleting)}>Delete</HoverText>
-						}
-					})()}
-				</ContentRight>
-			}
-		})()}
-	</ContentRight>
-	<ContentLeft>
-		<Form>
-			<Form.Field>
-				<CommentList comments={props.comments}/>
-				<Grid.Row style={{display: 'flex'}}>
-					<input placeholder="comment" ref={newComment}/>
-					<Button style={{marginLeft: '10px'}} onClick={writeComment}>Comment</Button>
-				</Grid.Row>
-			</Form.Field>				
-		</Form>
-	</ContentLeft>			
-</PostCard>
+			</ContentLeft>			
+		</PostCard>
+	</Transition>
 } 
 
 const PostList: React.FC<postListProp> = (props) => {
@@ -351,9 +358,13 @@ export const Home: React.FC = () => {
 		<>
 			<MyGrid>
 				<Grid.Column>
-					<Transition>
-						<>
-							<Header>Welcome!</Header>
+					<Header>Welcome!</Header>
+						<Transition
+							mountOnShow
+							transitionOnMount
+							animation="fade down"
+							duration={600}
+						>
 							<NewPostCard centered>
 								<Card.Content>
 									<Form>
@@ -366,10 +377,9 @@ export const Home: React.FC = () => {
 									</Form>
 								</Card.Content>		
 							</NewPostCard>	
-							<PostList postList={postList}/>
-							<Button onClick={logout}>Logout</Button>
-						</>			
-					</Transition>
+						</Transition>
+					<PostList postList={postList}/>
+					<Button onClick={logout}>Logout</Button>	
 				</Grid.Column>
 			</MyGrid>
 		</>

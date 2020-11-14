@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { useCookies } from 'react-cookie';
 import { Login } from "./Login";
-import {Post} from "./Post"
+import { Home } from "./Home"
 
 const useAuth = () => {
   const [cookies, setCookie] = useCookies(['token']);
@@ -53,7 +53,7 @@ const WebRouter: React.FC = () => {
           <Login />
         </Route>
         <PrivateRoute path="/home">
-          <Post/>
+          <Home/>
         </PrivateRoute>
         <Route path="*">
           <div>404 not found</div>
