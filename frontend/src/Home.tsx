@@ -73,6 +73,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 
 			}
 		})
+		window.location.reload();
 	}
 
 	return <CommentCard>
@@ -120,6 +121,7 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 
 const Post: React.FC<PostProp> = (props) => {
 	const [isEditting, setIsEditting] = useState(false)
+	const [dummyState, setDummyState] = useState(false);
 	const PostCard = styled(Card)`
 		width: 60% !important;
 	`;
@@ -151,9 +153,10 @@ const Post: React.FC<PostProp> = (props) => {
 			baseURL: process.env.REACT_APP_BACKEND_URL,
 			// url: "writeCommentURL"
 			data: {
-
+				
 			}
 		})
+		setDummyState(!dummyState);
 	}
 
 	return <PostCard centered>
@@ -238,6 +241,7 @@ export const Home: React.FC = () => {
 	}];
 	const [postList, setPostList] = useState(testList);
 	const [testId, setTestId] = useState(1);
+	const [dummyState, setDummyState] = useState(false);
 	const [cookies, setCookie,removeCookie] = useCookies(['token']);
 
 	const MyGrid = styled(Grid)`
@@ -253,13 +257,20 @@ export const Home: React.FC = () => {
 			const result = await axios({
 				method: "get",
 				baseURL: process.env.REACT_APP_BACKEND_URL,
-				url: "/users/id/" + testId
+				url: "/users/"
 			})
-			setPostList([{
-				post: result.data.userId,
-				owner: result.data.username,
-				comments: [result.data.password]
-			}])
+			let tempList = [];
+			for(let i=0;i<result.data.length;i++){
+				const temp={
+					post: result.data[i].userId,
+					owner: result.data[i].username,
+					comments: [{
+						comment: result.data[i].password,
+						owner: result.data[i].username
+				}]};
+				tempList.push(temp);
+			}
+			setPostList(tempList);
 		}
 
 		fetchData();
@@ -273,11 +284,14 @@ export const Home: React.FC = () => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			//url: writePostURL
+			url: "/users/",
 			data: {
-
+				userId: 10,
+				username: "Tony",
+				password: newPost.current?.value
 			}
 		})
+		setDummyState(!dummyState);
 	}
 
 	return (
