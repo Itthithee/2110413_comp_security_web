@@ -51,6 +51,7 @@ margin: 10px;
 
 const Comment: React.FC<CommentProp> = (props) => {
 	const [isEditting, setIsEditting] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 	const CommentCard = styled(Card)`
 		width: 100% !important;
 	`;
@@ -58,6 +59,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 
 	useEffect(() => {
 		setIsEditting(false);
+		setIsDeleting(false);
 	}, [])
 
 	const editComment = (editting: any) => {
@@ -73,7 +75,21 @@ const Comment: React.FC<CommentProp> = (props) => {
 
 			}
 		})
-		window.location.reload();
+	}
+
+	const deleteComment = (deleting: any) => {
+		setIsDeleting(deleting);
+	}
+
+	const confirmDeleteComment = async () => {
+		const result = await axios({
+			method: "delete",
+			baseURL: process.env.REACT_APP_BACKEND_URL,
+			// url: "deleteCommentURL"
+			data: {
+			
+			}
+		})
 	}
 
 	return <CommentCard>
@@ -97,7 +113,17 @@ const Comment: React.FC<CommentProp> = (props) => {
 					if (true) { //check if is owner of comment OR is moderator
 						return <ContentRight>
 							<HoverText onClick={() => editComment(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
-							<HoverText>Delete</HoverText>
+							{(() => {
+								if (isDeleting) {
+									return <>
+										<Label>Are you sore you want to delete this comment?</Label>
+										<HoverText onClick={() => confirmDeleteComment()}>Yes</HoverText>
+										<HoverText onClick={() => deleteComment(!isDeleting)}>No</HoverText>
+									</>
+								} else {
+									return <HoverText onClick={() => deleteComment(!isDeleting)}>Delete</HoverText>
+								}
+							})()}
 						</ContentRight>
 					}
 				})()}
@@ -120,7 +146,8 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 }
 
 const Post: React.FC<PostProp> = (props) => {
-	const [isEditting, setIsEditting] = useState(false)
+	const [isEditting, setIsEditting] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 	const [dummyState, setDummyState] = useState(false);
 	const PostCard = styled(Card)`
 		width: 60% !important;
@@ -130,6 +157,7 @@ const Post: React.FC<PostProp> = (props) => {
 
 	useEffect(() => {
 		setIsEditting(false);
+		setIsDeleting(false);
 	}, [])
 
 	const editPost = (editting: any) => {
@@ -140,9 +168,24 @@ const Post: React.FC<PostProp> = (props) => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "editCommentURL"
+			// url: "editPostURL"
 			data: {
 
+			}
+		})
+	}
+
+	const deletePost = (deleting: any) => {
+		setIsDeleting(deleting);
+	}
+
+	const confirmDeletePost = async () => {
+		const result = await axios({
+			method: "delete",
+			baseURL: process.env.REACT_APP_BACKEND_URL,
+			// url: "deletePostURL"
+			data: {
+			
 			}
 		})
 	}
@@ -180,8 +223,18 @@ const Post: React.FC<PostProp> = (props) => {
 		{(() => {
 			if (true) { //check if is owner of post OR is moderator
 				return <ContentRight>
-					<HoverText onClick={() => editPost(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
-					<HoverText>Delete</HoverText>
+						<HoverText onClick={() => editPost(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
+					{(() => {
+						if (isDeleting) {
+							return <>
+								<Label>Are you sore you want to delete this post?</Label>
+								<HoverText onClick={() => confirmDeletePost()}>Yes</HoverText>
+								<HoverText onClick={() => deletePost(!isDeleting)}>No</HoverText>
+							</>
+						} else {
+							return <HoverText onClick={() => deletePost(!isDeleting)}>Delete</HoverText>
+						}
+					})()}
 				</ContentRight>
 			}
 		})()}
