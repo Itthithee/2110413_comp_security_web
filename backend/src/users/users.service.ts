@@ -3,6 +3,7 @@ import {
     Injectable,
     BadRequestException
 } from '@nestjs/common';
+import { CreateUserDto } from './users.dto';
 export type User = any;
 
 @Injectable()
@@ -37,5 +38,25 @@ export class UsersService {
         // const ret = await this.userRepository.findOne(userId);
         // if (!ret) throw new BadRequestException('Invalid User');
         // return ret;
+    }
+
+    async findById(userId: number): Promise<User> {
+        const res = this.users.find(user => user.userId.toString() === userId);
+        if (!res) throw new BadRequestException('cannot find');
+        return res;
+    }
+
+    async editById(userDto: CreateUserDto): Promise<User> {
+        const res = this.users.find(user => user.userId === userDto.userId);
+        if (res) this.users.reduce(res);
+        this.users.push({
+            userId: userDto.userId,
+            username: userDto.username,
+            password: userDto.password
+        });
+    }
+
+    async getAll(): Promise<User[]> {
+        return this.users;
     }
 }

@@ -32,6 +32,7 @@
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
     "start-server-webpack-plugin": "^2.2.5",
+    "typeorm": "^0.2.29",
     "webpack-cli": "^4.2.0",
     "webpack-node-externals": "^2.5.2"
   },
