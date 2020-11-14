@@ -31,27 +31,28 @@ interface postListProp{
 	postList: PostProp[];
 }
 
+const ContentLeft = styled(Card.Content)`
+text-align: left;
+`;
+const ContentRight = styled(Card.Content)`
+text-align: right;
+`;
+const Label = styled.label`
+text-align: left;
+`;
+const HoverText = styled.label`
+text-align: right;
+font-size: 12px;
+margin: 10px;
+&:hover {
+	color: lightBlue;
+}
+`;
+
 const Comment: React.FC<CommentProp> = (props) => {
 	const [isEditting, setIsEditting] = useState(false);
-	const Label = styled.label`
-		text-align: left;
-	`;
 	const CommentCard = styled(Card)`
 		width: 100% !important;
-	`;
-	const ContentLeft = styled(Card.Content)`
-		text-align: left;
-	`;
-	const ContentRight = styled(Card.Content)`
-		text-align: right;
-	`;
-	const HoverText = styled.label`
-		text-align: right;
-		font-size: 12px;
-		margin: 10px;
-		&:hover {
-			color: lightBlue;
-		}
 	`;
 	const edittedComment = useRef<HTMLInputElement>(null);
 
@@ -103,7 +104,6 @@ const Comment: React.FC<CommentProp> = (props) => {
 }
 
 const CommentList: React.FC<CommentListProp> = (props) => {
-
 	let elements = [];
 	for(let i=0;i<props.comments.length;i++){
 		elements.push(
@@ -118,15 +118,32 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 	)
 }
 
-
-const PostList: React.FC<postListProp> = (props) => {
-	const Label = styled.label`
-		text-align: left;
-	`;
+const Post: React.FC<PostProp> = (props) => {
+	const [isEditting, setIsEditting] = useState(false)
 	const PostCard = styled(Card)`
 		width: 60% !important;
 	`;
+	const edittedPost = useRef<HTMLInputElement>(null);
 	const newComment = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		setIsEditting(false);
+	}, [])
+
+	const editPost = (editting: any) => {
+		setIsEditting(editting);
+	}
+
+	const confirmEditPost = async () => {
+		const result = await axios({
+			method: "post",
+			baseURL: process.env.REACT_APP_BACKEND_URL,
+			// url: "editCommentURL"
+			data: {
+
+			}
+		})
+	}
 
 	const writeComment = async () => {
 		const result = await axios({
@@ -139,23 +156,52 @@ const PostList: React.FC<postListProp> = (props) => {
 		})
 	}
 
+	return <PostCard centered>
+	<ContentLeft>
+		{(() => {
+			if(isEditting){
+				return <Form>
+					<Form.Field>
+						<Grid.Row style={{display: 'flex'}}>
+							<input placeholder={ props.post } ref={edittedPost}/>
+							<Button style={{marginLeft: '10px'}} onClick={confirmEditPost}>Edit</Button>
+						</Grid.Row>
+					</Form.Field>
+				</Form>
+			} else {
+				return <Label>{ props.post }</Label>
+			}
+		})()}
+	</ContentLeft>
+	<ContentRight>
+		{(() => {
+			if (true) { //check if is owner of post OR is moderator
+				return <ContentRight>
+					<HoverText onClick={() => editPost(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
+					<HoverText>Delete</HoverText>
+				</ContentRight>
+			}
+		})()}
+	</ContentRight>
+	<ContentLeft>
+		<Form>
+			<Form.Field>
+				<CommentList comments={props.comments}/>
+				<Grid.Row style={{display: 'flex'}}>
+					<input placeholder="comment" ref={newComment}/>
+					<Button style={{marginLeft: '10px'}} onClick={writeComment}>Comment</Button>
+				</Grid.Row>
+			</Form.Field>				
+		</Form>
+	</ContentLeft>			
+</PostCard>
+} 
+
+const PostList: React.FC<postListProp> = (props) => {
 	let elements = [];
 	for(let i=0;i<props.postList.length;i++){
 		elements.push(
-			<PostCard centered key={"post-"+i}>
-				<Card.Content>
-					<Form>
-						<Form.Field>
-							<Label>{ props.postList[i].post }.</Label>
-							<CommentList comments={props.postList[i].comments}/>
-							<Grid.Row style={{display: 'flex'}}>
-								<input placeholder="comment" ref={newComment}/>
-								<Button style={{marginLeft: '10px'}} onClick={writeComment}>Comment</Button>
-							</Grid.Row>
-						</Form.Field>				
-					</Form>
-				</Card.Content>
-			</PostCard>
+			<Post post={props.postList[i].post} owner={props.postList[i].owner} comments={props.postList[i].comments}/>
 		)
 	}
 
@@ -167,7 +213,7 @@ const PostList: React.FC<postListProp> = (props) => {
 };
 
 
-export const Post: React.FC = () => {
+export const Home: React.FC = () => {
 	let testList = [{
 		"post": "post1",
 		"owner": "user1",
@@ -194,9 +240,6 @@ export const Post: React.FC = () => {
 	const [testId, setTestId] = useState(1);
 	const [cookies, setCookie,removeCookie] = useCookies(['token']);
 
-	const Label = styled.label`
-		text-align: left;
-	`;
 	const MyGrid = styled(Grid)`
 		padding-top: 10% !important;
 	`;
