@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { useCookies } from 'react-cookie';
 import { Login } from "./Login";
+import { Home } from "./Home"
 
 const useAuth = () => {
   const [cookies, setCookie] = useCookies(['token']);
@@ -27,7 +28,7 @@ const PrivateRoute = ({ children, ...rest }: any) => {
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
+              pathname: "/",
               state: { from: location }
             }}
           />
@@ -48,11 +49,11 @@ const WebRouter: React.FC = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/login">
+        <Route exact path="/">
           <Login />
         </Route>
         <PrivateRoute path="/home">
-          <FakeHome/>
+          <Home/>
         </PrivateRoute>
         <Route path="*">
           <div>404 not found</div>
