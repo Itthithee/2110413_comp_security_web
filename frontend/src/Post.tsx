@@ -12,22 +12,27 @@ import {
 } from "semantic-ui-react"
 import { useCookies } from "react-cookie";
 
-interface CommentListProp{
-	comments: string[];
-	hover: boolean;
+interface CommentProp{
+	comment: string;
+	owner: string;
 }
 
-interface PostItem{
+interface CommentListProp{
+	comments: CommentProp[];
+}
+
+interface PostProp{
 	post: string;
-	comments: string[];
+	owner: string;
+	comments: CommentProp[];
 }
 
 interface postListProp{
-	postList: PostItem[];
+	postList: PostProp[];
 }
 
-
-const CommentList: React.FC<CommentListProp> = (props) => {
+const Comment: React.FC<CommentProp> = (props) => {
+	const [isEditting, setIsEditting] = useState(false);
 	const Label = styled.label`
 		text-align: left;
 	`;
@@ -48,9 +53,17 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 			color: lightBlue;
 		}
 	`;
-	const newComment = useRef<HTMLInputElement>(null);
-	
-	const editComment = async () => {
+	const edittedComment = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		setIsEditting(false);
+	}, [])
+
+	const editComment = (editting: any) => {
+		setIsEditting(editting);
+	}
+
+	const confirmEditComment = async () => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
@@ -61,29 +74,40 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 		})
 	}
 
-	let elements = [];
-	for(let i=0;i<props.comments.length;i++){
-		elements.push(
-			<CommentCard>
+	return <CommentCard>
 				<ContentLeft>
-					<Label>{ props.comments[i] }</Label>	
-				</ContentLeft>
-				{(() => {
-					if (i==1) { //check if is owner of comment OR is moderator
-						return <ContentRight>
-							<Form>
+					{(() => {
+						if(isEditting){
+							return <Form>
 								<Form.Field>
 									<Grid.Row style={{display: 'flex'}}>
-										<input placeholder="edit" ref={newComment}/>
-										<HoverText onClick={editComment}>Edit</HoverText>
-										<HoverText>Delete</HoverText>
+										<input placeholder={ props.comment } ref={edittedComment}/>
+										<Button style={{marginLeft: '10px'}} onClick={confirmEditComment}>Edit</Button>
 									</Grid.Row>
-								</Form.Field>				
+								</Form.Field>
 							</Form>
+						} else {
+							return <Label>{ props.comment }</Label>
+						}
+					})()}
+				</ContentLeft>
+				{(() => {
+					if (true) { //check if is owner of comment OR is moderator
+						return <ContentRight>
+							<HoverText onClick={() => editComment(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
+							<HoverText>Delete</HoverText>
 						</ContentRight>
 					}
 				})()}
 			</CommentCard>
+}
+
+const CommentList: React.FC<CommentListProp> = (props) => {
+
+	let elements = [];
+	for(let i=0;i<props.comments.length;i++){
+		elements.push(
+			<Comment comment={props.comments[i].comment} owner={props.comments[i].owner}/>
 		)
 	}
 	
@@ -118,12 +142,12 @@ const PostList: React.FC<postListProp> = (props) => {
 	let elements = [];
 	for(let i=0;i<props.postList.length;i++){
 		elements.push(
-			<PostCard centered>
+			<PostCard centered key={"post-"+i}>
 				<Card.Content>
 					<Form>
 						<Form.Field>
 							<Label>{ props.postList[i].post }.</Label>
-							<CommentList comments={props.postList[i].comments} hover={false}/>
+							<CommentList comments={props.postList[i].comments}/>
 							<Grid.Row style={{display: 'flex'}}>
 								<input placeholder="comment" ref={newComment}/>
 								<Button style={{marginLeft: '10px'}} onClick={writeComment}>Comment</Button>
@@ -145,12 +169,26 @@ const PostList: React.FC<postListProp> = (props) => {
 
 export const Post: React.FC = () => {
 	let testList = [{
-		"post": "p1",
-		"comments": ["c1", "c2"]
+		"post": "post1",
+		"owner": "user1",
+		"comments": [{
+			"comment": "comment1",
+			"owner": "user2"
+		},{
+			"comment": "comment2",
+			"owner": "user3"
+		}]
 	}, 
 	{
-		"post": "p2",
-		"comments": ["c3", "c4"]
+		"post": "post2",
+		"owner": "user4",
+		"comments": [{
+			"comment": "comment3",
+			"owner": "user5"
+		},{
+			"comment": "comment4",
+			"owner": "user6"
+		}]
 	}];
 	const [postList, setPostList] = useState(testList);
 	const [testId, setTestId] = useState(1);
@@ -174,7 +212,11 @@ export const Post: React.FC = () => {
 				baseURL: process.env.REACT_APP_BACKEND_URL,
 				url: "/users/id/" + testId
 			})
-			setPostList([{post: result.data.username, comments: [result.data.userId, result.data.password]}]);
+			setPostList([{
+				post: result.data.userId,
+				owner: result.data.username,
+				comments: [result.data.password]
+			}])
 		}
 
 		fetchData();
