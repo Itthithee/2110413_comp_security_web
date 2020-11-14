@@ -10,6 +10,7 @@ import {
 	Button,
 	Header,
 } from "semantic-ui-react"
+import { useCookies } from "react-cookie";
 
 interface CommentListProp{
 	comments: string[];
@@ -47,9 +48,20 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 			color: lightBlue;
 		}
 	`;
-	const newComment = useRef<HTMLInputElement>(null)
-	let elements = [];
+	const newComment = useRef<HTMLInputElement>(null);
 	
+	const editComment = async () => {
+		const result = await axios({
+			method: "post",
+			baseURL: process.env.REACT_APP_BACKEND_URL,
+			// url: "editCommentURL"
+			data: {
+
+			}
+		})
+	}
+
+	let elements = [];
 	for(let i=0;i<props.comments.length;i++){
 		elements.push(
 			<CommentCard>
@@ -57,13 +69,13 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 					<Label>{ props.comments[i] }</Label>	
 				</ContentLeft>
 				{(() => {
-					if (i==1) {
+					if (i==1) { //check if is owner of comment OR is moderator
 						return <ContentRight>
 							<Form>
 								<Form.Field>
 									<Grid.Row style={{display: 'flex'}}>
 										<input placeholder="edit" ref={newComment}/>
-										<HoverText onClick={() => console.log(i)}>Edit</HoverText>
+										<HoverText onClick={editComment}>Edit</HoverText>
 										<HoverText>Delete</HoverText>
 									</Grid.Row>
 								</Form.Field>				
@@ -90,7 +102,18 @@ const PostList: React.FC<postListProp> = (props) => {
 	const PostCard = styled(Card)`
 		width: 60% !important;
 	`;
-	const newComment = useRef<HTMLInputElement>(null)
+	const newComment = useRef<HTMLInputElement>(null);
+
+	const writeComment = async () => {
+		const result = await axios({
+			method: "post",
+			baseURL: process.env.REACT_APP_BACKEND_URL,
+			// url: "writeCommentURL"
+			data: {
+
+			}
+		})
+	}
 
 	let elements = [];
 	for(let i=0;i<props.postList.length;i++){
@@ -103,7 +126,7 @@ const PostList: React.FC<postListProp> = (props) => {
 							<CommentList comments={props.postList[i].comments} hover={false}/>
 							<Grid.Row style={{display: 'flex'}}>
 								<input placeholder="comment" ref={newComment}/>
-								<Button style={{marginLeft: '10px'}}>Comment</Button>
+								<Button style={{marginLeft: '10px'}} onClick={writeComment}>Comment</Button>
 							</Grid.Row>
 						</Form.Field>				
 					</Form>
@@ -131,6 +154,7 @@ export const Post: React.FC = () => {
 	}];
 	const [postList, setPostList] = useState(testList);
 	const [testId, setTestId] = useState(1);
+	const [cookies, setCookie,removeCookie] = useCookies(['token']);
 
 	const Label = styled.label`
 		text-align: left;
@@ -138,6 +162,10 @@ export const Post: React.FC = () => {
 	const MyGrid = styled(Grid)`
 		padding-top: 10% !important;
 	`;
+	const NewPostCard = styled(Card)`
+		width: 60% !important;
+	`;
+	const newPost = useRef<HTMLInputElement>(null);
 	
 	useEffect(() => {
 		const fetchData = async () => {
@@ -152,15 +180,42 @@ export const Post: React.FC = () => {
 		fetchData();
 	}, []);
 
+	const logout = () => {
+		removeCookie('token',{path:'/'});
+	}
+
+	const writePost = async() => {
+		const result = await axios({
+			method: "post",
+			baseURL: process.env.REACT_APP_BACKEND_URL,
+			//url: writePostURL
+			data: {
+
+			}
+		})
+	}
+
 	return (
 		<>
 			<MyGrid>
 				<Grid.Column>
 					<Transition>
 						<>
-							<Header>Post</Header>
+							<Header>Welcome!</Header>
+							<NewPostCard centered>
+								<Card.Content>
+									<Form>
+										<Form.Field>
+											<Grid.Row style={{display: 'flex'}}>
+												<input placeholder="new post" ref={newPost}/>
+												<Button style={{marginLeft: '10px'}} onClick={writePost}>Post!</Button>
+											</Grid.Row>
+										</Form.Field>				
+									</Form>
+								</Card.Content>		
+							</NewPostCard>	
 							<PostList postList={postList}/>
-							<Button onClick={() => setTestId(testId>2? 1: testId+1)}>Logout {testId}</Button>
+							<Button onClick={logout}>Logout</Button>
 						</>			
 					</Transition>
 				</Grid.Column>
