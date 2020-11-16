@@ -25,4 +25,16 @@ export class PostsService {
     async editById(postDto: CreatePostDto) {
         this.postRepository.update(postDto.postId, postDto);
     }
+
+    async createPost(createPostDto: CreatePostDto){
+        const res = this.postRepository.insert(createPostDto);
+        if (!res) throw new BadRequestException('Fail to create Post');
+        return res
+    }
+
+    async deletePost(postId : Date){
+        const res = this.postRepository.delete(postId);
+        if (!res) throw new BadRequestException('Fail to delete Post');
+        return res
+    }
 }
