@@ -9,9 +9,10 @@ import {
   Dimmer,
   Loader
 } from "semantic-ui-react";
-import {Redirect} from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { useCookies } from "react-cookie";
-
+import axios from "axios";
+axios.defaults.withCredentials = true
 const Loading: React.FC = ({ loading }: any) => {
   if (loading) {
     return null;
@@ -33,28 +34,41 @@ export const Login: React.FC = () => {
   const username = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
-  const [cookies, setCookie] = useCookies(["token"]);
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
-  const signIn = () => {
+  const signIn = async() => {
     setLoading(true);
-    if (username.current !== null) {
-      // console.log(username.current.value);
+    try{
+      if (username.current === null) {
+        // console.log(username.current.value);
+        return
+      }
+      if (password.current === null) {
+        return
+      }
+      let data ={ username: username?.current?.value, password: password?.current?.value }
+      const result = await axios({
+        method: "post",
+        baseURL: process.env.REACT_APP_BACKEND_URL,
+        url: "auth/login",
+        data: data
+      });
+      console.log(result)
+      // let cookiesOptions: object = { path: "/" };
+      // if (process.env.NODE_ENV === "production") {
+      //   cookiesOptions = { ...cookiesOptions, secure: true };
+      // }
+      // setCookie("token", "accessed", cookiesOptions);
+      setLoginSuccess(true)
+    } catch(e){
+      alert("wrong username or password")
     }
-    if (password.current !== null) {
-      password.current.value = "";
-    }
-    let cookiesOptions : object = {path: "/"}
-    if (process.env.NODE_ENV === 'production'){
-      cookiesOptions = {...cookiesOptions,secure : true}
-    }
-    setCookie("token", "accessed", cookiesOptions);
-    console.log(cookies.token)
     setLoading(false);
   };
   useEffect(() => {}, [loading]);
   return (
     <>
-      {cookies.token==="accessed"?<Redirect to="/home"/>:null}
+      {loginSuccess?<Redirect to="/home" /> : null }
       {loading ? (
         <Dimmer inverted active>
           <Loader>Loading</Loader>

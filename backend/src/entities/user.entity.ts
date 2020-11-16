@@ -8,7 +8,7 @@ import {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  userId: Date;
+  userId: number;
 
   @Column('varchar', { length: 50, unique: true, nullable: false })
   username: string;
