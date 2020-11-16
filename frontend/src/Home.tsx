@@ -78,6 +78,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 				text: edittedComment.current?.value
 			}
 		})
+		setIsEditting(!isEditting);
 	}
 
 	const deleteComment = (deleting: any) => {
@@ -90,7 +91,9 @@ const Comment: React.FC<CommentProp> = (props) => {
 			baseURL: process.env.REACT_APP_BACKEND_URL,
 			url: "/comments/delete/"+props.commentId
 		})
+		setIsDeleting(!isDeleting);
 	}
+	useEffect(() => {}, [isEditting, isDeleting]);
 
 	return <CommentCard>
 		<ContentLeft>
@@ -160,7 +163,6 @@ const Post: React.FC<PostProp> = (props) => {
 	]
 	const [isEditting, setIsEditting] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [dummyState, setDummyState] = useState(false);
 	const [commentList, setCommentList] = useState(testList);
 	const PostCard = styled(Card)`
 		width: 60% !important;
@@ -218,19 +220,22 @@ const Post: React.FC<PostProp> = (props) => {
 			baseURL: process.env.REACT_APP_BACKEND_URL,
 			url: "/posts/delete/"+props.postId
 		})
+		setIsDeleting(!isDeleting);
 	}
 
 	const writeComment = async () => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "writeCommentURL"
+			url: "/comments/"
 			data: {
-				
+				text: newComment.current?.value,
+				owner: null
 			}
 		})
-		setDummyState(!dummyState);
+		setIsEditting(!isEditting);
 	}
+	useEffect(() => {}, [isEditting, isDeleting]);
 
 	return <Transition
 	mountOnShow
@@ -366,11 +371,10 @@ export const Home: React.FC = () => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/users/",
+			url: "/posts/",
 			data: {
-				userId: 10,
-				username: "Tony",
-				password: newPost.current?.value
+				text: newPost.current?.value,
+				owner: null
 			}
 		})
 		setDummyState(!dummyState);
