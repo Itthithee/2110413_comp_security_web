@@ -9,24 +9,19 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './posts.dto';
 // import { ApiTags } from '@nestjs/swagger';
 
-// @ApiTags('Users')
+// @ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
     constructor(private readonly postService: PostsService) { }
 
     @Get(':postId')
     async getPostById(@Param('postId') postId: number) {
-        return this.postService.getUserById(postId);
+        return this.postService.getPostById(postId);
     }
 
     @Get('id/:postId')
     async getById(@Param('postId') postId: number) {
         return this.postService.findById(postId);
-    }
-
-    @Get('name/:username')
-    async getByName(@Param('username') username: string) {
-        return this.postService.findOne(username);
     }
 
     @Get('/')
@@ -35,7 +30,7 @@ export class PostsController {
     }
 
     @Post('/')
-    async editById(@Body() userDto: CreatePostDto) {
+    async editById(@Body() postDto: CreatePostDto) {
         return this.postService.editById(postDto);
     }
 }
