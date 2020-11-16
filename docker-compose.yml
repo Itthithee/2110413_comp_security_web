@@ -14,26 +14,19 @@ services:
    - mynet
   ports:
    - 5000:5000
-db:
+ db:
    image: "mysql:latest"
    restart: always
+   container_name: db
    command: '--init-file /data/application/init.sql'
    volumes:
-    - /backend/init.sql:/data/application/init.sql
+    - ./backend/init.sql:/data/application/init.sql
    expose:
     - "3306"
    environment:
-    MYSQL_PASSWORD: /run/secrets/mysql_pw
-    MYSQL_DATABASE: /run/secrets/mysql_db
-   secrets:
-    - mysql_pw
-    - mysql_db
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: tmp
    networks:
     - mynet
 networks:
  mynet: {}
-secrets:
- mysql_pw:
-  file:
- mysql_db:
-  file:
