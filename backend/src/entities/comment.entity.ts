@@ -12,7 +12,7 @@ import { timeStamp } from 'console';
 @Entity()
 export class Comment {
     @PrimaryGeneratedColumn()
-    commentId: Date;
+    commentId: number;
 
     @Column('varchar')
     text: string;

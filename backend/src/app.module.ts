@@ -6,6 +6,7 @@ import {AuthModule} from './auth/auth.module'
 import { UsersController } from './users/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module';
           charset: 'utf8mb4_general_ci',
       }),
     }),
+    CommentsModule,
     UsersModule],
   controllers: [AppController],
   providers: [AppService],

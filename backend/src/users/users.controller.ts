@@ -3,13 +3,12 @@ import {
     Get,
     Param,
     Post,
-    Body
+    Body,
+    BadRequestException
 } from '@nestjs/common';
 import { UsersService } from  './users.service';
 import { CreateUserDto } from './users.dto';
-// import { ApiTags } from '@nestjs/swagger';
 
-// @ApiTags('Users')
 @Controller('users')
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
@@ -23,8 +22,8 @@ export class UsersController {
         return this.userService.getUserById(userId);
     }
 
-    @Get('/name/:username')
-    async getUserByName(@Param('username') username: string){
-        return this.userService.getUserByName(username);
-    }
+    // @Get('/name/:username')
+    // async getUserByName(@Param('username') username: string){
+    //     return this.userService.getUserByName(username);
+    // }
 }

@@ -16,13 +16,23 @@ export class CommentsService {
         private readonly commentRepository: Repository<Comment>,
     ) {}
 
+    async createComment(createCommentDto: CreateCommentDto) {
+        const res = await this.commentRepository.insert(createCommentDto);    
+        if (!res) throw new BadRequestException('Create Comment Failed');
+        return res;
+    }
+
     async getCommentById(commentId: Date): Promise<Comment> {
         const res = await this.commentRepository.findOne(commentId);
         if (!res) throw new BadRequestException('Invalid Comment ID');
         return res;
     }
 
-    async editById(commentDto: CreateCommentDto) {
-        this.commentRepository.update(commentDto.commentId, commentDto);
+    async editCommentById(commentDto: CreateCommentDto, commentId: number) {
+        this.commentRepository.update(commentId, commentDto);
+    }
+
+    async deleteCommentById(commentId: number) {
+        this.commentRepository.delete(commentId);
     }
 }

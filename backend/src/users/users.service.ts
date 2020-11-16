@@ -17,10 +17,10 @@ export class UsersService {
         private readonly userRepository: Repository<User>,
     ) {}
 
-    async createUser(createUserDto: CreateUserDto){
+    async createUser(createUserDto: CreateUserDto) {
         const hashedPass = await bcrypt.hash(createUserDto.password, 10);
         createUserDto.password = hashedPass;
-        this.userRepository.insert(createUserDto);
+        return this.userRepository.insert(createUserDto);
     }
 
     async getUserById(userId: number): Promise<User>{
