@@ -3,7 +3,8 @@ import {
     Get,
     Param,
     Post,
-    Body
+    Body,
+    Delete
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './posts.dto';
@@ -16,12 +17,21 @@ export class PostsController {
     constructor(private readonly postService: PostsService) { }
 
     @Get(':postId')
-    async getPostById(@Param('postId') postId: Date) {
+    async getPostById(@Param('postId') postId: number) {
         return this.postService.getPostById(postId);
     }
 
-    @Post('/')
+    @Post('/:postId')
     async editById(@Body() postDto: CreatePostDto) {
         return this.postService.editById(postDto);
+    }
+    @Post('/')
+    async createPost(@Body() postDto: CreatePostDto) {
+        return this.postService.createPost(postDto);
+    }
+
+    @Delete('/delete/:userId')
+    async deletePostById(@Param('postId') postId: number) {
+        return this.postService.deletePost(postId);
     }
 }

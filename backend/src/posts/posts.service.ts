@@ -16,7 +16,7 @@ export class PostsService {
         private readonly postRepository: Repository<Post>,
     ) {}
 
-    async getPostById(postId: Date): Promise<Post> {
+    async getPostById(postId: number): Promise<Post> {
         const res = await this.postRepository.findOne(postId);
         if (!res) throw new BadRequestException('Invalid Post ID');
         return res;
@@ -32,7 +32,7 @@ export class PostsService {
         return res
     }
 
-    async deletePost(postId : Date){
+    async deletePost(postId : number){
         const res = this.postRepository.delete(postId);
         if (!res) throw new BadRequestException('Fail to delete Post');
         return res

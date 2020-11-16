@@ -23,8 +23,8 @@ export class UsersController {
         return this.userService.getUserById(userId);
     }
 
-    @Get('/name/:username')
-    async getUserByName(@Param('username') username: string){
-        return this.userService.getUserByName(username);
-    }
+    // @Get('/name/:username')
+    // async getUserByName(@Param('username') username: string){
+    //     return this.userService.getUserByName(username);
+    // }
 }
