@@ -38,7 +38,7 @@ export class CommentsService {
         return res;
     }
 
-    async editById(postDto: CreateCommentDto) {
+    async editById(commentDto: CreateCommentDto) {
         const res = this.comments.find(comment => comment.commentId === commentDto.commentId);
         this.comments.push({
             commentId: commentDto.commentId,
