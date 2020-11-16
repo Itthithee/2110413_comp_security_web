@@ -8,7 +8,7 @@ import {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  userId: number;
+  userId: Date;
 
   @Column('varchar', { length: 50, unique: true, nullable: false })
   username: string;
@@ -19,13 +19,6 @@ export class User {
 
     @Column({ nullable: false })
   isAdmin: boolean;
-
-  // @OneToMany(
-  //     () => Post,
-  //     post => post.owner,
-  //     { nullable: false },
-  // )
-  // posts: Post[];
 }
 
  

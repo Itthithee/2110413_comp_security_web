@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './posts.dto';
-import { timeStamp } from 'console';
+import { time, timeStamp } from 'console';
 // import { ApiTags } from '@nestjs/swagger';
 
 // @ApiTags('Posts')
@@ -16,18 +16,8 @@ export class PostsController {
     constructor(private readonly postService: PostsService) { }
 
     @Get(':postId')
-    async getPostById(@Param('postId') postId: timeStamp) {
+    async getPostById(@Param('postId') postId: Date) {
         return this.postService.getPostById(postId);
-    }
-
-    @Get('id/:postId')
-    async getById(@Param('postId') postId: timeStamp) {
-        return this.postService.findById(postId);
-    }
-
-    @Get('/')
-    async getAll() {
-        return this.postService.getAll();
     }
 
     @Post('/')

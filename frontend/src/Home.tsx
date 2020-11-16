@@ -94,6 +94,9 @@ const Comment: React.FC<CommentProp> = (props) => {
 
 	return <CommentCard>
 		<ContentLeft>
+			<Label style={{fontWeight: 'bold'}}>{ props.owner+':' }</Label>
+		</ContentLeft>
+		<ContentLeft>
 			{(() => {
 				if(isEditting){
 					return <Form>
@@ -210,6 +213,9 @@ const Post: React.FC<PostProp> = (props) => {
 	> 
 		<PostCard centered>
 			<ContentLeft>
+				<Label style={{fontWeight: 'bold'}}>{ props.owner+':' }</Label>
+			</ContentLeft>
+			<ContentLeft>
 				{(() => {
 					if(isEditting){
 						return <Form>
@@ -305,7 +311,7 @@ export const Home: React.FC = () => {
 	const [cookies, setCookie,removeCookie] = useCookies(['token']);
 
 	const MyGrid = styled(Grid)`
-		padding-top: 10% !important;
+		padding-top: 20px !important;
 	`;
 	const NewPostCard = styled(Card)`
 		width: 60% !important;

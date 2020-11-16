@@ -11,7 +11,7 @@ import { timeStamp } from 'console';
 @Entity()
 export class Post {
     @PrimaryGeneratedColumn()
-    postId: timeStamp;
+    postId: Date;
 
     @Column('varchar')
     text: string;
