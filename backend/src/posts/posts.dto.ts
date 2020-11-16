@@ -1,8 +1,9 @@
 import { User } from 'src/entities/user.entity';
+import { timeStamp } from 'console';
 
 
 export class CreatePostDto {
-    postId: number;
+    postId: timeStamp;
     text: string;
     owner: User;
 }

@@ -6,11 +6,12 @@ import {
     ManyToOne
 } from 'typeorm';
 import { User } from './user.entity';
+import { timeStamp } from 'console';
 
 @Entity()
 export class Post {
     @PrimaryGeneratedColumn()
-    postId: number; // timestamp
+    postId: timeStamp;
 
     @Column('varchar')
     text: string;
