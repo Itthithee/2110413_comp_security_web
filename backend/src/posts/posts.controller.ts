@@ -7,8 +7,9 @@ import {
     Delete
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './posts.dto';
+import { CreatePostDto, EditPostDto } from './posts.dto';
 import { time, timeStamp } from 'console';
+import { EditCommentDto } from 'src/comments/comments.dto';
 // import { ApiTags } from '@nestjs/swagger';
 
 // @ApiTags('Posts')
@@ -26,10 +27,11 @@ export class PostsController {
         return this.postService.getAllPost();
     }
 
-    @Post('/:postId')
-    async editById(@Body() postDto: CreatePostDto) {
-        return this.postService.editById(postDto);
+    @Post('/edit/:postId')
+    async editById(@Body() editPostDto: EditPostDto, @Param('postId') postId: number) {
+        return this.postService.editById(postId, editPostDto);
     }
+
     @Post('/')
     async createPost(@Body() postDto: CreatePostDto) {
         return this.postService.createPost(postDto);

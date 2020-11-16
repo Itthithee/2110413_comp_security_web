@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { Comment } from 'src/entities/comment.entity';
 import { Repository } from 'typeorm';
-import { CreateCommentDto } from './comments.dto';
+import { CreateCommentDto, EditCommentDto } from './comments.dto';
 import { timeStamp } from 'console';
 
 @Injectable()
@@ -28,8 +28,8 @@ export class CommentsService {
         return res;
     }
 
-    async editCommentById(commentDto: CreateCommentDto, commentId: number) {
-        this.commentRepository.update(commentId, commentDto);
+    async editCommentById(editCommentDto: EditCommentDto, commentId: number) {
+        this.commentRepository.update(commentId, editCommentDto);
     }
 
     async deleteCommentById(commentId: number) {

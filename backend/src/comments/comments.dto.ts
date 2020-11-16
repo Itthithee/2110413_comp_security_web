@@ -9,3 +9,8 @@ export class CreateCommentDto {
     owner: User;
     postId: Post;
 }
+
+export class EditCommentDto {
+    commentId: number;
+    text: string;
+}

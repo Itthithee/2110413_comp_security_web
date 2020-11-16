@@ -7,7 +7,7 @@ import {
     Delete
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './comments.dto';
+import { CreateCommentDto, EditCommentDto } from './comments.dto';
 import { timeStamp } from 'console';
 
 @Controller('comments')
@@ -25,8 +25,8 @@ export class CommentsController {
     }
 
     @Post('/edit/:commentId')
-    async editCommentById(@Body() commentDto: CreateCommentDto, @Param('commentId') commentId: number) {
-        return this.commentService.editCommentById(commentDto, commentId);
+    async editCommentById(@Body() editCommentDto: EditCommentDto, @Param('commentId') commentId: number) {
+        return this.commentService.editCommentById(editCommentDto, commentId);
     }
 
     @Delete('/delete/:commentId')

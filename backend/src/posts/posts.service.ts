@@ -7,10 +7,11 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Post } from 'src/entities/post.entity';
 import { Comment } from 'src/entities/comment.entity';
 import { Repository, getRepository } from 'typeorm';
-import { CreatePostDto } from './posts.dto';
+import { CreatePostDto, EditPostDto } from './posts.dto';
 import { timeStamp } from 'console';
 import { User } from 'src/entities/user.entity';
 import { text } from 'express';
+import { EditCommentDto } from 'src/comments/comments.dto';
 
 @Injectable()
 export class PostsService {
@@ -40,8 +41,8 @@ export class PostsService {
         return res;
     }
 
-    async editById(postDto: CreatePostDto) {
-        this.postRepository.update(postDto.postId, postDto);
+    async editById(postId: number, editPostDto: EditPostDto) {
+        this.postRepository.update(postId, editPostDto);
     }
 
     async createPost(createPostDto: CreatePostDto){

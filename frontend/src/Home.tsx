@@ -72,9 +72,10 @@ const Comment: React.FC<CommentProp> = (props) => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "editCommentURL"
+			url: "/comments/edit/"+props.commentId,
 			data: {
-
+				commentId: props.commentId,
+				text: edittedComment.current?.value
 			}
 		})
 	}
@@ -87,10 +88,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 		const result = await axios({
 			method: "delete",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "deleteCommentURL"
-			data: {
-			
-			}
+			url: "/comments/delete/"+props.commentId
 		})
 	}
 
@@ -202,9 +200,10 @@ const Post: React.FC<PostProp> = (props) => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "editPostURL"
+			url: "/posts/edit/"+props.postId,
 			data: {
-
+				postId: props.postId,
+				text: edittedPost.current?.value
 			}
 		})
 	}
@@ -217,10 +216,7 @@ const Post: React.FC<PostProp> = (props) => {
 		const result = await axios({
 			method: "delete",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "deletePostURL"
-			data: {
-			
-			}
+			url: "/posts/delete/"+props.postId
 		})
 	}
 
