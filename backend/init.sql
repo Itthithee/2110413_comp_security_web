@@ -25,4 +25,4 @@ GRANT ALL PRIVILEGES ON * . * TO 'appuser'@'localhost'
 FLUSH PRIVILEGES
 
 INSERT INTO User (userId, username, password, isAdmin)
-VALUES ('839403', 'Team', 'mypassword', 'FALSE'),('903820', 'It', 'whosepassword', 'FALSE'),('573920', 'Smooth', 'whatspassword', 'TRUE') 
+VALUES (839403, 'Team', 'mypassword', FALSE),(903820, 'It', 'whosepassword', FALSE),(573920, 'Smooth', 'whatspassword', TRUE) 
