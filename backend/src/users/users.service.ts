@@ -18,9 +18,12 @@ export class UsersService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto){
+        
         const hashedPass = await bcrypt.hash(createUserDto.password, 10);
         createUserDto.password = hashedPass;
-        this.userRepository.insert(createUserDto);
+        const res = this.userRepository.insert(createUserDto);
+        if (!res) throw new BadRequestException('Fail to create user');
+        return res
     }
 
     async getUserById(userId: number): Promise<User>{
