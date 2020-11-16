@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Post } from 'src/entities/post.entity';
 import { Repository } from 'typeorm';
 import { CreatePostDto } from './posts.dto';
+import { timeStamp } from 'console';
 
 @Injectable()
 export class PostsService {
@@ -14,38 +15,19 @@ export class PostsService {
 
     constructor(
         @InjectRepository(Post)
-        private readonly userRepository: Repository<Post>,
+        private readonly postRepository: Repository<Post>,
     ) {
         this.posts = [
-            {
-                postId: 1,
-                text: 'Hello world!',
-                owner: {
-                    userId: 1,
-                    username: 'john',
-                    password: 'changeme',
-                    isAdmin: true
-                }
-            },
-            {
-                postId: 2,
-                text: 'I am Chris!',
-                owner: {
-                    userId: 2,
-                    username: 'chris',
-                    password: 'secret',
-                    isAdmin: false
-                }
-            }
+            
         ];
     }
 
-    async findOne(postId: number): Promise<Post | undefined> {
+    async findOne(postId: timeStamp): Promise<Post | undefined> {
         return this.posts.find(post => post.postId === postId);
     }
 
-    async getPostById(postId: number): Promise<Post> {
-        const res = await this.userRepository.findOne(postId);
+    async getPostById(postId: timeStamp): Promise<Post> {
+        const res = await this.postRepository.findOne(postId);
         if (!res) throw new BadRequestException('Invalid Post ID');
         return res;
     }
