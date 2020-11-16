@@ -20,7 +20,7 @@ export class UsersService {
     async createUser(createUserDto: CreateUserDto){
         const hashedPass = await bcrypt.hash(createUserDto.password, 10);
         createUserDto.password = hashedPass;
-        this.userRepository.create(createUserDto);
+        this.userRepository.insert(createUserDto);
     }
 
     async getUserById(userId: number): Promise<User>{
