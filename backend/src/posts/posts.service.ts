@@ -16,7 +16,7 @@ export class PostsService {
         private readonly postRepository: Repository<Post>,
     ) {}
 
-    async getPostById(postId: Date): Promise<Post> {
+    async getPostById(postId: number): Promise<Post> {
         const res = await this.postRepository.findOne(postId);
         if (!res) throw new BadRequestException('Invalid Post ID');
         return res;
@@ -24,5 +24,17 @@ export class PostsService {
 
     async editById(postDto: CreatePostDto) {
         this.postRepository.update(postDto.postId, postDto);
+    }
+
+    async createPost(createPostDto: CreatePostDto){
+        const res = this.postRepository.insert(createPostDto);
+        if (!res) throw new BadRequestException('Fail to create Post');
+        return res
+    }
+
+    async deletePost(postId : number){
+        const res = this.postRepository.delete(postId);
+        if (!res) throw new BadRequestException('Fail to delete Post');
+        return res
     }
 }

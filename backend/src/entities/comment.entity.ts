@@ -19,7 +19,7 @@ export class Comment {
 
     @ManyToOne(type => User)
     @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId' })
-    owner: User;
+    ownerId: User;
 
     @ManyToOne(type => Post)
     @JoinColumn({ name: 'postId', referencedColumnName: 'postId' })
