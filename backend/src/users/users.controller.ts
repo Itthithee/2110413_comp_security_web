@@ -14,28 +14,17 @@ import { CreateUserDto } from './users.dto';
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
 
-    @Get(':userId')
+    @Post()
+    async createUser(@Body() createUserDto: CreateUserDto){
+        return this.userService.createUser(createUserDto);
+    }
+    @Get('/userId/:userId')
     async getUserById(@Param('userId') userId: number) {
         return this.userService.getUserById(userId);
     }
 
-    @Get('id/:userId')
-    async getById(@Param('userId') userId: number) {
-        return this.userService.findById(userId);
-    }
-
-    @Get('name/:username')
-    async getByName(@Param('username') username: string) {
-        return this.userService.findOne(username);
-    }
-
-    @Get('/')
-    async getAll() {
-        return this.userService.getAll();
-    }
-
-    @Post('/')
-    async editById(@Body() userDto: CreateUserDto) {
-        return this.userService.editById(userDto);
+    @Get('/name/:username')
+    async getUserByName(@Param('username') username: string){
+        return this.userService.getUserByName(username);
     }
 }

@@ -8,6 +8,7 @@ import { timeStamp } from 'console';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './users.dto';
+import bcrypt = require('bcrypt');
 
 @Injectable()
 export class UsersService {
@@ -17,7 +18,9 @@ export class UsersService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto){
-        this.userRepository.create(createUserDto);
+        const hashedPass = await bcrypt.hash(createUserDto.password, 10);
+        createUserDto.password = hashedPass;
+        this.userRepository.insert(createUserDto);
     }
 
     async getUserById(userId: number): Promise<User>{
