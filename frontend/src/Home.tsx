@@ -227,7 +227,7 @@ const Post: React.FC<PostProp> = (props) => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/comments/"
+			url: "/comments/",
 			data: {
 				text: newComment.current?.value,
 				owner: null
