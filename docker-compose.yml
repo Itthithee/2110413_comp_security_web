@@ -14,5 +14,24 @@ services:
    - mynet
   ports:
    - 5000:5000
+db:
+   image: "mysql:latest"
+   restart: always
+   command: '--default-authentication-plugin=mysql_native_password'
+   expose:
+    - "3306"
+   environment:
+    MYSQL_PASSWORD: /run/secrets/mysql_pw
+    MYSQL_DATABASE: /run/secrets/mysql_db
+   secrets:
+    - mysql_pw
+    - mysql_db
+   networks:
+    - mynet
 networks:
  mynet: {}
+secrets:
+ mysql_pw:
+  file:
+ mysql_db:
+  file:
