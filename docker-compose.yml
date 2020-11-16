@@ -17,7 +17,9 @@ services:
 db:
    image: "mysql:latest"
    restart: always
-   command: '--default-authentication-plugin=mysql_native_password'
+   command: '--init-file /data/application/init.sql'
+   volumes:
+    - /backend/init.sql:/data/application/init.sql
    expose:
     - "3306"
    environment:
