@@ -16,9 +16,9 @@ export class Post {
     @Column('varchar')
     text: string;
 
-    @ManyToOne(type => User)
-    @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId' })
-    owner: User;
+    @ManyToOne(type => User, { eager: true })
+    @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId'})
+    ownerId: User;
 
 }
 

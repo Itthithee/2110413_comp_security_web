@@ -16,9 +16,14 @@ import { time, timeStamp } from 'console';
 export class PostsController {
     constructor(private readonly postService: PostsService) { }
 
-    @Get(':postId')
+    @Get('/postId/:postId')
     async getPostById(@Param('postId') postId: number) {
         return this.postService.getPostById(postId);
+    }
+
+    @Get('/allPosts')
+    async getAllPost() {
+        return this.postService.getAllPost();
     }
 
     @Post('/:postId')
@@ -33,5 +38,10 @@ export class PostsController {
     @Delete('/delete/:userId')
     async deletePostById(@Param('postId') postId: number) {
         return this.postService.deletePost(postId);
+    }
+
+    @Get('/comments/:postId')
+    async getCommentsByPostId(@Param('postId') postId: number) {
+        return this.postService.getCommentsByPostId(postId);
     }
 }

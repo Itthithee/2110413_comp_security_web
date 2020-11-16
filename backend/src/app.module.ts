@@ -7,6 +7,7 @@ import { UsersController } from './users/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { CommentsModule } from './comments/comments.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CommentsModule } from './comments/comments.module';
       }),
     }),
     CommentsModule,
+    PostsModule,
     UsersModule],
   controllers: [AppController],
   providers: [AppService],

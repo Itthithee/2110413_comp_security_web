@@ -17,11 +17,11 @@ export class Comment {
     @Column('varchar')
     text: string;
 
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { eager: true })
     @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId' })
     ownerId: User;
 
-    @ManyToOne(type => Post)
+    @ManyToOne(type => Post, { eager: true })
     @JoinColumn({ name: 'postId', referencedColumnName: 'postId' })
     postId: Post;
 
