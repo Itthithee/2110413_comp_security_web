@@ -22,7 +22,7 @@ export class UsersService {
 
     async getUserById(userId: number): Promise<User>{
         const res = await this.userRepository.findOne(userId);
-        if (!res) throw new BadRequestException('Invalid UserId');
+        if (!res) throw new BadRequestException('Invalid User ID');
         return res;
     }
 

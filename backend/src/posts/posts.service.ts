@@ -46,7 +46,7 @@ export class PostsService {
 
     async getPostById(postId: number): Promise<Post> {
         const res = await this.userRepository.findOne(postId);
-        if (!res) throw new BadRequestException('Invalid Post');
+        if (!res) throw new BadRequestException('Invalid Post ID');
         return res;
     }
 
