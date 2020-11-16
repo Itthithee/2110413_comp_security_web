@@ -10,13 +10,13 @@ export class User {
   @PrimaryGeneratedColumn()
   userId: number;
 
-  @Column('varchar', { length: 50, unique: true })
+  @Column('varchar', { length: 50, unique: true, nullable: false })
   username: string;
 
-  @Column('varchar', { length: 50 })
+  @Column('varchar', { length: 50, nullable: false })
   password: string;
 
-  @Column()
+    @Column({ nullable: false })
   isAdmin: boolean;
 
   // @OneToMany(

@@ -2,7 +2,8 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
-    JoinColumn
+    JoinColumn,
+    ManyToOne
 } from 'typeorm';
 import { User } from './user.entity';
 
@@ -14,7 +15,8 @@ export class Post {
     @Column('varchar')
     text: string;
 
-    @JoinColumn( { name: 'ownerId', referencedColumnName: 'userId' } )
+    @ManyToOne(type => User)
+    @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId' })
     owner: User;
 
 }
