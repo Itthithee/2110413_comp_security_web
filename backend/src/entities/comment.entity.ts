@@ -6,12 +6,13 @@ import {
     ManyToOne
 } from 'typeorm';
 import { User } from './user.entity';
+import { Post } from './post.entity';
 import { timeStamp } from 'console';
 
 @Entity()
-export class Post {
+export class Comment {
     @PrimaryGeneratedColumn()
-    postId: timeStamp;
+    commentId: timeStamp;
 
     @Column('varchar')
     text: string;
@@ -19,6 +20,10 @@ export class Post {
     @ManyToOne(type => User)
     @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId' })
     owner: User;
+
+    @ManyToOne(type => Post)
+    @JoinColumn({ name: 'postId', referencedColumnName: 'postId' })
+    postId: Post;
 
 }
 
