@@ -16,18 +16,8 @@ export class CommentsController {
     constructor(private readonly commentService: CommentsService) { }
 
     @Get(':commentId')
-    async getPostById(@Param('commentId') commentId: timeStamp) {
+    async getPostById(@Param('commentId') commentId: Date) {
         return this.commentService.getCommentById(commentId);
-    }
-
-    @Get('id/:commentId')
-    async getById(@Param('commentId') commentId: timeStamp) {
-        return this.commentService.findById(commentId);
-    }
-
-    @Get('/')
-    async getAll() {
-        return this.commentService.getAll();
     }
 
     @Post('/')

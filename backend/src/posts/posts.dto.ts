@@ -3,7 +3,7 @@ import { timeStamp } from 'console';
 
 
 export class CreatePostDto {
-    postId: timeStamp;
+    postId: Date;
     text: string;
     owner: User;
 }
