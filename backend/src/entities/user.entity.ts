@@ -16,6 +16,9 @@ export class User {
   @Column('varchar', { length: 50 })
   password: string;
 
+  @Column()
+  isAdmin: boolean;
+
   // @OneToMany(
   //     () => Post,
   //     post => post.owner,

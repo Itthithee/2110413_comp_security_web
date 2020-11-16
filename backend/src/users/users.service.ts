@@ -21,16 +21,19 @@ export class UsersService {
                 userId: 1,
                 username: 'john',
                 password: 'changeme',
+                isAdmin: true
             },
             {
                 userId: 2,
                 username: 'chris',
                 password: 'secret',
+                isAdmin: false
             },
             {
                 userId: 3,
                 username: 'maria',
                 password: 'guess',
+                isAdmin: false
             },
         ];
     }
@@ -47,7 +50,7 @@ export class UsersService {
 
     async findById(userId: number): Promise<User> {
         const res = this.users.find(user => user.userId === userId);
-        if (!res) throw new BadRequestException('cannot find');
+        if (!res) throw new BadRequestException('Not Found');
         return res;
     }
 
@@ -56,7 +59,8 @@ export class UsersService {
         this.users.push({
             userId: userDto.userId,
             username: userDto.username,
-            password: userDto.password
+            password: userDto.password,
+            isAdmin: userDto.isAdmin
         });
     }
 
