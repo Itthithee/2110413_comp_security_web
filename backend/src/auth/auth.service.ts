@@ -20,7 +20,7 @@ export class AuthService {constructor(
   }
 
   login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+    const payload = { username: user.username, userId: user.userId ,isAdmin : user.isAdmin};
     return {
       access_token: this.jwtService.sign(payload),
     };
