@@ -7,6 +7,11 @@ To start docker compose :
 ```bash
 $ docker-compose up
 ```
+OR
+For rebuild container:
+```bash
+$ docker-compose up --build
+```bash
 
 To stop docker compose :
 
