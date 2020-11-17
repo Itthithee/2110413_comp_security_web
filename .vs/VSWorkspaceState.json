@@ -5,8 +5,9 @@
     "\\backend\\src",
     "\\backend\\src\\auth",
     "\\backend\\src\\entities",
+    "\\backend\\src\\posts",
     "\\backend\\src\\users"
   ],
-  "SelectedNode": "\\backend\\src\\users\\users.controller.ts",
+  "SelectedNode": "\\backend\\src\\entities\\user.entity.ts",
   "PreviewInSolutionExplorer": false
 }
