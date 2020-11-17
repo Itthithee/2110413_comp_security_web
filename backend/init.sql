@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS comsecure;
 USE comsecure;
-CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'testdb';
-GRANT ALL PRIVILEGES ON comsecure.* TO 'appuser'@'localhost';
+CREATE USER 'appuser'@'db' IDENTIFIED BY 'testdb';
+GRANT ALL PRIVILEGES ON comsecure.* TO 'appuser'@'db';
 
 CREATE TABLE IF NOT EXISTS User(
 	userId INT,

@@ -18,12 +18,10 @@ services:
     image: "mysql:latest"
     restart: always
     container_name: db
-    command: '--init-file ./backend/init.sql'
     volumes:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./backend/mysql_data:/var/lib/mysql
     environment:
-      MYSQL_URL: localhost
       MYSQL_USER: appuser
       MYSQL_PASSWORD: testdb
       MYSQL_DB: comsecure
