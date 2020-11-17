@@ -140,7 +140,8 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 	let elements = [];
 	for(let i=0;i<props.comments.length;i++){
 		elements.push(
-			<Comment 	commentId={props.comments[i].commentId}
+			<Comment 	key={props.comments[i].commentId}
+								commentId={props.comments[i].commentId}
 								comment={props.comments[i].comment} 
 								owner={props.comments[i].owner}/>
 		)
@@ -302,7 +303,8 @@ const PostList: React.FC<postListProp> = (props) => {
 	let elements = [];
 	for(let i=0;i<props.postList.length;i++){
 		elements.push(
-			<Post postId={props.postList[i].postId}
+			<Post key={props.postList[i].postId}
+						postId={props.postList[i].postId}
 						post={props.postList[i].post}
 						owner={props.postList[i].owner}
 						comments={props.postList[i].comments}/>
@@ -337,6 +339,9 @@ export const Home: React.FC = () => {
 		padding-top: 20px !important;
 	`;
 	const NewPostCard = styled(Card)`
+		width: 60% !important;
+	`;
+	const PostCard = styled(Card)`
 		width: 60% !important;
 	`;
 	const newPost = useRef<HTMLInputElement>(null);
