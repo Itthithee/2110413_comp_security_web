@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS Comment(
 	postId INT,
 	FOREIGN KEY (postId) REFERENCES Post(postId)
 );
-
+/*
 CREATE TRIGGER AddUser BEFORE INSERT ON User
 FOR EACH ROW BEGIN
 	DECLARE usernameLength INT;
@@ -40,7 +40,7 @@ FOR EACH ROW BEGIN
 		SIGNAL SQLSTATE '45000' SET message_text = 'Password is less than 8 characters long.';
 	END IF;
 END
-
+*/
 
 INSERT INTO User (userId, username, password, isAdmin);
 VALUES (839403, 'Team', 'mypassword', FALSE), (903820, 'It', 'whosepassword', FALSE),(573920, 'Smooth', 'whatspassword', TRUE);
