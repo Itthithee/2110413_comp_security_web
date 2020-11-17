@@ -177,7 +177,6 @@ const Post: React.FC<PostProp> = (props) => {
 	]
 	const [isEditting, setIsEditting] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [dummyState, setDummyState] = useState(false);
 	const [commentList, setCommentList] = useState(testList);
 	const [user, setUser] = useState({} as User);
 	const [cookies, setCookies] = useCookies(['Authentication']);
@@ -259,7 +258,7 @@ const Post: React.FC<PostProp> = (props) => {
 					postId: props.postId
 				}
 			})
-			setDummyState(!dummyState);
+			window.location.reload();
 		} else {
 			alert("Unknown error!");
 		}		
@@ -268,8 +267,6 @@ const Post: React.FC<PostProp> = (props) => {
 		const decrypt = jwt.decode(cookies.Authentication);
 		setUser(decrypt as User);
 	}, [isEditting, isDeleting]);
-
-	useEffect(() => {}, [dummyState])
 
 	return <Transition
 	mountOnShow
@@ -367,7 +364,6 @@ export const Home: React.FC = () => {
 	}];
 	const [postList, setPostList] = useState(testList);
 	const [testId, setTestId] = useState(1);
-	const [dummyState, setDummyState] = useState(false);
 	const [logoutSuccess, setLogoutSuccess] = useState(false);
 	const [cookies, setCookie,removeCookie] = useCookies(['Authentication']);
 	const MyGrid = styled(Grid)`
@@ -429,13 +425,13 @@ export const Home: React.FC = () => {
 					ownerId: userId
 				}
 			})
-			setDummyState(!dummyState);
+			window.location.reload();
 		} else {
 			alert("Unknown error!");
 		}		
 	}
 
-	useEffect(() => {}, [dummyState, logoutSuccess])
+	useEffect(() => {}, [logoutSuccess])
 
 	return (
 		<>
