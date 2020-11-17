@@ -11,6 +11,7 @@ import {
 	Header,
 } from "semantic-ui-react"
 import { useCookies } from "react-cookie";
+axios.defaults.withCredentials = true
 
 interface CommentProp{
 	comment: string;
@@ -309,7 +310,6 @@ export const Home: React.FC = () => {
 	const [testId, setTestId] = useState(1);
 	const [dummyState, setDummyState] = useState(false);
 	const [cookies, setCookie,removeCookie] = useCookies(['token']);
-
 	const MyGrid = styled(Grid)`
 		padding-top: 20px !important;
 	`;
@@ -342,8 +342,12 @@ export const Home: React.FC = () => {
 		fetchData();
 	}, []);
 
-	const logout = () => {
-		removeCookie('token',{path:'/'});
+	const logout = async() => {
+		const result = await axios({
+          method: "post",
+          baseURL: process.env.REACT_APP_BACKEND_URL,
+          url: "auth/logout",
+        })
 	}
 
 	const writePost = async() => {

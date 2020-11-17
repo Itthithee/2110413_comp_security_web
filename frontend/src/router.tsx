@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -8,14 +8,21 @@ import {
 import { useCookies } from 'react-cookie';
 import { Login } from "./Login";
 import { Home } from "./Home"
-// const jwt = require('@types/jsonwebtoken');
+import {StateProvider,StateContext,User,UserDispatch} from "./StateKeeper"
+import * as jwt from "jsonwebtoken";
+import { computeStyles } from "@popperjs/core";
 
-const useAuth = async() => {
-  const [cookies, setCookie] = useCookies(['Authentication']);
-  if(cookies && cookies.Authentication){
-    // const decrypt = await jwt.verify(cookies.Authentication, process.env.JWT_SECRET);
-    console.log("accessed")
-    return true
+const useAuth = () => {
+  const {state,setState} = useContext(StateContext) as UserDispatch;
+  const [cookies ,setCookie] = useCookies(["Authentication"])
+  if(cookies && cookies.Authentication ){
+    const decrypt = jwt.decode(cookies.Authentication);
+    let {username,userId,isAdmin} = decrypt as User
+    console.log(decrypt)
+    if(username && userId){
+      return true;
+
+    }
   }
   return false;
 };
@@ -51,6 +58,7 @@ const WebRouter: React.FC = () => {
   return (
     <Router>
       <Switch>
+        <StateProvider>
         <Route exact path="/">
           <Login />
         </Route>
@@ -60,6 +68,7 @@ const WebRouter: React.FC = () => {
         <Route path="*">
           <div>404 not found</div>
         </Route>
+        </StateProvider>
       </Switch>
     </Router>
   );
