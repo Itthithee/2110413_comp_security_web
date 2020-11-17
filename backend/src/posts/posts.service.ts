@@ -60,6 +60,7 @@ export class PostsService {
     async getCommentsByPostId(postId: number) {
         const res = getRepository(Comment).createQueryBuilder('comment')
         .select(["comment.commentId", "comment.text", "user.username"])
+        .where("comment.postId = :postId", {postId: postId})
         .leftJoin("comment.ownerId", "user")
         .getMany();
         if (!res) throw new BadRequestException('Cannot find any comment');
