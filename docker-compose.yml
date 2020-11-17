@@ -1,37 +1,37 @@
 version: "3.8"
 services:
- front:
-  build: ./frontend
-  container_name: frontend
-  networks:
-   - mynet
-  ports:
-   - 4000:3000
- back:
-  build: ./backend
-  container_name: backend
-  networks:
-   - mynet
-  ports:
-   - 5000:5000
- db:
-   image: "mysql:latest"
-   restart: always
-   container_name: db
-   command: '--init-file ./backend/init.sql'
-   volumes:
-    - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-    - ./backend/mysql_data:/var/lib/mysql
-   environment:
-    MYSQL_URL: localhost
-    MYSQL_USER: appuser
-    MYSQL_PASSWORD: testdb
-    MYSQL_DB: comsecure
-   expose:
-    - "3306"
-   ports:
-    - 3500:3306
-   networks:
-    - mynet
+  front:
+    build: ./frontend
+    container_name: frontend
+    networks:
+      - mynet
+    ports:
+      - 4000:3000
+  back:
+    build: ./backend
+    container_name: backend
+    networks:
+      - mynet
+    ports:
+      - 5000:5000
+  db:
+    image: "mysql:latest"
+    restart: always
+    container_name: db
+    command: '--init-file ./backend/init.sql'
+    volumes:
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_URL: localhost
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: testdb
+      MYSQL_DB: comsecure
+    expose:
+      - "3306"
+    ports:
+      - 3500:3306
+    networks:
+      - mynet
 networks:
- mynet: {}
+  mynet: {}
