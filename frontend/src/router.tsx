@@ -8,10 +8,12 @@ import {
 import { useCookies } from 'react-cookie';
 import { Login } from "./Login";
 import { Home } from "./Home"
+// const jwt = require('@types/jsonwebtoken');
 
-const useAuth = () => {
-  const [cookies, setCookie] = useCookies(['token']);
-  if(cookies.token === "accessed"){
+const useAuth = async() => {
+  const [cookies, setCookie] = useCookies(['Authentication']);
+  if(cookies && cookies.Authentication){
+    // const decrypt = await jwt.verify(cookies.Authentication, process.env.JWT_SECRET);
     console.log("accessed")
     return true
   }

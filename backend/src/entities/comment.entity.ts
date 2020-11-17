@@ -12,16 +12,16 @@ import { timeStamp } from 'console';
 @Entity()
 export class Comment {
     @PrimaryGeneratedColumn()
-    commentId: Date;
+    commentId: number;
 
     @Column('varchar')
     text: string;
 
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { eager: true })
     @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId' })
-    owner: User;
+    ownerId: User;
 
-    @ManyToOne(type => Post)
+    @ManyToOne(type => Post, { eager: true })
     @JoinColumn({ name: 'postId', referencedColumnName: 'postId' })
     postId: Post;
 

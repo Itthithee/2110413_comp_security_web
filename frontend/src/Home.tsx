@@ -13,6 +13,7 @@ import {
 import { useCookies } from "react-cookie";
 
 interface CommentProp{
+	commentId: number;
 	comment: string;
 	owner: string;
 }
@@ -22,6 +23,7 @@ interface CommentListProp{
 }
 
 interface PostProp{
+	postId: number;
 	post: string;
 	owner: string;
 	comments: CommentProp[];
@@ -70,11 +72,13 @@ const Comment: React.FC<CommentProp> = (props) => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "editCommentURL"
+			url: "/comments/edit/"+props.commentId,
 			data: {
-
+				commentId: props.commentId,
+				text: edittedComment.current?.value
 			}
 		})
+		setIsEditting(!isEditting);
 	}
 
 	const deleteComment = (deleting: any) => {
@@ -85,12 +89,11 @@ const Comment: React.FC<CommentProp> = (props) => {
 		const result = await axios({
 			method: "delete",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "deleteCommentURL"
-			data: {
-			
-			}
+			url: "/comments/delete/"+props.commentId
 		})
+		setIsDeleting(!isDeleting);
 	}
+	useEffect(() => {}, [isEditting, isDeleting]);
 
 	return <CommentCard>
 		<ContentLeft>
@@ -137,7 +140,9 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 	let elements = [];
 	for(let i=0;i<props.comments.length;i++){
 		elements.push(
-			<Comment comment={props.comments[i].comment} owner={props.comments[i].owner}/>
+			<Comment 	commentId={props.comments[i].commentId}
+								comment={props.comments[i].comment} 
+								owner={props.comments[i].owner}/>
 		)
 	}
 	
@@ -149,9 +154,16 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 }
 
 const Post: React.FC<PostProp> = (props) => {
+	let testList = [
+		{
+			commentId: 1,
+			comment: "comment1",
+			owner: "user2"
+		}
+	]
 	const [isEditting, setIsEditting] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [dummyState, setDummyState] = useState(false);
+	const [commentList, setCommentList] = useState(testList);
 	const PostCard = styled(Card)`
 		width: 60% !important;
 	`;
@@ -161,6 +173,25 @@ const Post: React.FC<PostProp> = (props) => {
 	useEffect(() => {
 		setIsEditting(false);
 		setIsDeleting(false);
+
+		const fetchData = async () => {
+			const result = await axios({
+				method: "get",
+				baseURL: process.env.REACT_APP_BACKEND_URL,
+				url: "/posts/comments/"+props.postId
+			})
+			let tempList = [];
+			for(let i=0;i<result.data.length;i++){
+				const temp={
+					commentId: result.data[i].commentId,
+					comment: result.data[i].text,
+					owner: result.data[i].ownerId.username};
+				tempList.push(temp);
+			}
+			setCommentList(tempList);
+		}
+
+		fetchData();
 	}, [])
 
 	const editPost = (editting: any) => {
@@ -171,9 +202,10 @@ const Post: React.FC<PostProp> = (props) => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "editPostURL"
+			url: "/posts/edit/"+props.postId,
 			data: {
-
+				postId: props.postId,
+				text: edittedPost.current?.value
 			}
 		})
 	}
@@ -186,24 +218,24 @@ const Post: React.FC<PostProp> = (props) => {
 		const result = await axios({
 			method: "delete",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "deletePostURL"
-			data: {
-			
-			}
+			url: "/posts/delete/"+props.postId
 		})
+		setIsDeleting(!isDeleting);
 	}
 
 	const writeComment = async () => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			// url: "writeCommentURL"
+			url: "/comments/",
 			data: {
-				
+				text: newComment.current?.value,
+				owner: null
 			}
 		})
-		setDummyState(!dummyState);
+		setIsEditting(!isEditting);
 	}
+	useEffect(() => {}, [isEditting, isDeleting]);
 
 	return <Transition
 	mountOnShow
@@ -254,7 +286,7 @@ const Post: React.FC<PostProp> = (props) => {
 			<ContentLeft>
 				<Form>
 					<Form.Field>
-						<CommentList comments={props.comments}/>
+						<CommentList comments={commentList}/>
 						<Grid.Row style={{display: 'flex'}}>
 							<input placeholder="comment" ref={newComment}/>
 							<Button style={{marginLeft: '10px'}} onClick={writeComment}>Comment</Button>
@@ -270,7 +302,10 @@ const PostList: React.FC<postListProp> = (props) => {
 	let elements = [];
 	for(let i=0;i<props.postList.length;i++){
 		elements.push(
-			<Post post={props.postList[i].post} owner={props.postList[i].owner} comments={props.postList[i].comments}/>
+			<Post postId={props.postList[i].postId}
+						post={props.postList[i].post}
+						owner={props.postList[i].owner}
+						comments={props.postList[i].comments}/>
 		)
 	}
 
@@ -284,25 +319,13 @@ const PostList: React.FC<postListProp> = (props) => {
 
 export const Home: React.FC = () => {
 	let testList = [{
+		"postId": 1,
 		"post": "post1",
 		"owner": "user1",
 		"comments": [{
+			"commentId": 1,
 			"comment": "comment1",
 			"owner": "user2"
-		},{
-			"comment": "comment2",
-			"owner": "user3"
-		}]
-	}, 
-	{
-		"post": "post2",
-		"owner": "user4",
-		"comments": [{
-			"comment": "comment3",
-			"owner": "user5"
-		},{
-			"comment": "comment4",
-			"owner": "user6"
 		}]
 	}];
 	const [postList, setPostList] = useState(testList);
@@ -323,17 +346,15 @@ export const Home: React.FC = () => {
 			const result = await axios({
 				method: "get",
 				baseURL: process.env.REACT_APP_BACKEND_URL,
-				url: "/users/"
+				url: "/posts/allPosts"
 			})
 			let tempList = [];
 			for(let i=0;i<result.data.length;i++){
 				const temp={
-					post: result.data[i].userId,
-					owner: result.data[i].username,
-					comments: [{
-						comment: result.data[i].password,
-						owner: result.data[i].username
-				}]};
+					postId: result.data[i].postId,
+					post: result.data[i].text,
+					owner: result.data[i].ownerId.username,
+					comments: []};
 				tempList.push(temp);
 			}
 			setPostList(tempList);
@@ -350,11 +371,10 @@ export const Home: React.FC = () => {
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/users/",
+			url: "/posts/",
 			data: {
-				userId: 10,
-				username: "Tony",
-				password: newPost.current?.value
+				text: newPost.current?.value,
+				owner: null
 			}
 		})
 		setDummyState(!dummyState);
