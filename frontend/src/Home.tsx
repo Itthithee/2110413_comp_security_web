@@ -11,12 +11,15 @@ import {
 	Header,
 } from "semantic-ui-react"
 import { useCookies } from "react-cookie";
+import * as jwt from "jsonwebtoken";
+import { User } from "./StateKeeper";
 axios.defaults.withCredentials = true
 
 interface CommentProp{
 	commentId: number;
 	comment: string;
 	owner: string;
+	authentication: string;
 }
 
 interface CommentListProp{
@@ -28,6 +31,7 @@ interface PostProp{
 	post: string;
 	owner: string;
 	comments: CommentProp[];
+	authentication: string;
 }
 
 interface postListProp{
@@ -144,7 +148,8 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 			<Comment 	key={props.comments[i].commentId}
 								commentId={props.comments[i].commentId}
 								comment={props.comments[i].comment} 
-								owner={props.comments[i].owner}/>
+								owner={props.comments[i].owner}
+								authentication={props.comments[i].authentication}/>
 		)
 	}
 	
@@ -160,11 +165,14 @@ const Post: React.FC<PostProp> = (props) => {
 		{
 			commentId: 1,
 			comment: "comment1",
-			owner: "user2"
+			owner: "user2",
+			authentication: "none"
 		}
 	]
 	const [isEditting, setIsEditting] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [dummyState, setDummyState] = useState(false);
+	const [cookies, setCookies, removeCookies] = useCookies(['Authentication']);
 	const [commentList, setCommentList] = useState(testList);
 	const PostCard = styled(Card)`
 		width: 60% !important;
@@ -187,7 +195,8 @@ const Post: React.FC<PostProp> = (props) => {
 				const temp={
 					commentId: result.data[i].commentId,
 					comment: result.data[i].text,
-					owner: result.data[i].ownerId.username};
+					owner: result.data[i].ownerId.username,
+					authentication: props.authentication};
 				tempList.push(temp);
 			}
 			setCommentList(tempList);
@@ -226,6 +235,25 @@ const Post: React.FC<PostProp> = (props) => {
 	}
 
 	const writeComment = async () => {
+		if (!newComment.current?.value || newComment.current?.value=="") {
+			alert("New comment cannot be empty.");
+		}
+		else if (cookies && cookies.Authentication) {
+				const decrypt = jwt.decode(cookies.Authentication);
+				let {username,userId,isAdmin} = decrypt as User;
+				const result = await axios({
+				method: "post",
+				baseURL: process.env.REACT_APP_BACKEND_URL,
+				url: "/comments/",
+				data: {
+					text: newComment.current?.value,
+					ownerId: userId
+				}
+			})
+			setDummyState(!dummyState);
+		} else {
+			alert("Unknown error!");
+		}		
 		const result = await axios({
 			method: "post",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
@@ -308,7 +336,8 @@ const PostList: React.FC<postListProp> = (props) => {
 						postId={props.postList[i].postId}
 						post={props.postList[i].post}
 						owner={props.postList[i].owner}
-						comments={props.postList[i].comments}/>
+						comments={props.postList[i].comments}
+						authentication={props.postList[i].authentication}/>
 		)
 	}
 
@@ -328,13 +357,15 @@ export const Home: React.FC = () => {
 		"comments": [{
 			"commentId": 1,
 			"comment": "comment1",
-			"owner": "user2"
-		}]
+			"owner": "user2",
+			"authentication": "none"
+		}],
+		"authentication": "none"
 	}];
 	const [postList, setPostList] = useState(testList);
 	const [testId, setTestId] = useState(1);
 	const [dummyState, setDummyState] = useState(false);
-	const [cookies, setCookie,removeCookie] = useCookies(['token']);
+	const [cookies, setCookie,removeCookie] = useCookies(['Authentication']);
 	const MyGrid = styled(Grid)`
 		padding-top: 20px !important;
 	`;
@@ -359,7 +390,8 @@ export const Home: React.FC = () => {
 					postId: result.data[i].postId,
 					post: result.data[i].text,
 					owner: result.data[i].ownerId.username,
-					comments: []};
+					comments: [],
+					authentication: cookies.Authentication};
 				tempList.push(temp);
 			}
 			setPostList(tempList);
@@ -373,21 +405,34 @@ export const Home: React.FC = () => {
           method: "post",
           baseURL: process.env.REACT_APP_BACKEND_URL,
           url: "auth/logout",
-        })
+				});
+		removeCookie('Authentication');
+		setDummyState(!dummyState);
 	}
 
 	const writePost = async() => {
-		const result = await axios({
-			method: "post",
-			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/posts/",
-			data: {
-				text: newPost.current?.value,
-				owner: null
-			}
-		})
-		setDummyState(!dummyState);
+		if (!newPost.current?.value || newPost.current?.value=="") {
+			alert("New post cannot be empty.");
+		}
+		else if (cookies && cookies.Authentication) {
+				const decrypt = jwt.decode(cookies.Authentication);
+				let {username,userId,isAdmin} = decrypt as User;
+				const result = await axios({
+				method: "post",
+				baseURL: process.env.REACT_APP_BACKEND_URL,
+				url: "/posts/",
+				data: {
+					text: newPost.current?.value,
+					ownerId: userId
+				}
+			})
+			setDummyState(!dummyState);
+		} else {
+			alert("Unknown error!");
+		}		
 	}
+
+	// useEffect(() => {}, [dummyState])
 
 	return (
 		<>
