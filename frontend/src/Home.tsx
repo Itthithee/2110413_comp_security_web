@@ -88,7 +88,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 				text: edittedComment.current?.value
 			}
 		})
-		setIsEditting(!isEditting);
+		window.location.reload();
 	}
 
 	const deleteComment = (deleting: any) => {
@@ -101,7 +101,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 			baseURL: process.env.REACT_APP_BACKEND_URL,
 			url: "/comments/delete/"+props.commentId
 		})
-		setIsDeleting(!isDeleting);
+		window.location.reload();
 	}
 	useEffect(() => {
 		const decrypt = jwt.decode(cookies.Authentication);
@@ -226,6 +226,7 @@ const Post: React.FC<PostProp> = (props) => {
 				text: edittedPost.current?.value
 			}
 		})
+		window.location.reload();
 	}
 
 	const deletePost = (deleting: any) => {
@@ -238,7 +239,7 @@ const Post: React.FC<PostProp> = (props) => {
 			baseURL: process.env.REACT_APP_BACKEND_URL,
 			url: "/posts/delete/"+props.postId
 		})
-		setIsDeleting(!isDeleting);
+		window.location.reload();
 	}
 
 	const writeComment = async () => {
@@ -254,28 +255,21 @@ const Post: React.FC<PostProp> = (props) => {
 				url: "/comments/",
 				data: {
 					text: newComment.current?.value,
-					ownerId: userId
+					ownerId: userId,
+					postId: props.postId
 				}
 			})
 			setDummyState(!dummyState);
 		} else {
 			alert("Unknown error!");
 		}		
-		const result = await axios({
-			method: "post",
-			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/comments/",
-			data: {
-				text: newComment.current?.value,
-				owner: null
-			}
-		})
-		setIsEditting(!isEditting);
 	}
 	useEffect(() => {
 		const decrypt = jwt.decode(cookies.Authentication);
 		setUser(decrypt as User);
 	}, [isEditting, isDeleting]);
+
+	useEffect(() => {}, [dummyState])
 
 	return <Transition
 	mountOnShow
