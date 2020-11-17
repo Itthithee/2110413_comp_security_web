@@ -13,13 +13,14 @@ import {
 import { useCookies } from "react-cookie";
 import * as jwt from "jsonwebtoken";
 import { User } from "./StateKeeper";
+import { Redirect } from "react-router-dom";
+import { link } from "fs";
 axios.defaults.withCredentials = true
 
 interface CommentProp{
 	commentId: number;
 	comment: string;
 	owner: string;
-	authentication: string;
 }
 
 interface CommentListProp{
@@ -31,7 +32,6 @@ interface PostProp{
 	post: string;
 	owner: string;
 	comments: CommentProp[];
-	authentication: string;
 }
 
 interface postListProp{
@@ -59,6 +59,7 @@ margin: 10px;
 const Comment: React.FC<CommentProp> = (props) => {
 	const [isEditting, setIsEditting] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [cookies, setCookie] = useCookies(['Authentication']);
 	const CommentCard = styled(Card)`
 		width: 100% !important;
 	`;
@@ -100,6 +101,9 @@ const Comment: React.FC<CommentProp> = (props) => {
 	}
 	useEffect(() => {}, [isEditting, isDeleting]);
 
+	const decrypt = jwt.decode(cookies.Authentication);
+	let {username,userId,isAdmin} = decrypt as User;
+
 	return <CommentCard>
 		<ContentLeft>
 			<Label style={{fontWeight: 'bold'}}>{ props.owner+':' }</Label>
@@ -121,7 +125,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 			})()}
 		</ContentLeft>
 		{(() => {
-			if (true) { //check if is owner of comment OR is moderator
+			if (props.owner===username || isAdmin) { //check if is owner of comment OR is moderator
 				return <ContentRight>
 					<HoverText onClick={() => editComment(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
 					{(() => {
@@ -148,8 +152,7 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 			<Comment 	key={props.comments[i].commentId}
 								commentId={props.comments[i].commentId}
 								comment={props.comments[i].comment} 
-								owner={props.comments[i].owner}
-								authentication={props.comments[i].authentication}/>
+								owner={props.comments[i].owner}/>
 		)
 	}
 	
@@ -165,14 +168,13 @@ const Post: React.FC<PostProp> = (props) => {
 		{
 			commentId: 1,
 			comment: "comment1",
-			owner: "user2",
-			authentication: "none"
+			owner: "user2"
 		}
 	]
 	const [isEditting, setIsEditting] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [dummyState, setDummyState] = useState(false);
-	const [cookies, setCookies, removeCookies] = useCookies(['Authentication']);
+	const [cookies, setCookies] = useCookies(['Authentication']);
 	const [commentList, setCommentList] = useState(testList);
 	const PostCard = styled(Card)`
 		width: 60% !important;
@@ -195,8 +197,7 @@ const Post: React.FC<PostProp> = (props) => {
 				const temp={
 					commentId: result.data[i].commentId,
 					comment: result.data[i].text,
-					owner: result.data[i].ownerId.username,
-					authentication: props.authentication};
+					owner: result.data[i].ownerId.username};
 				tempList.push(temp);
 			}
 			setCommentList(tempList);
@@ -267,6 +268,9 @@ const Post: React.FC<PostProp> = (props) => {
 	}
 	useEffect(() => {}, [isEditting, isDeleting]);
 
+	const decrypt = jwt.decode(cookies.Authentication);
+	let {username,userId,isAdmin} = decrypt as User;
+
 	return <Transition
 	mountOnShow
 	transitionOnMount
@@ -295,7 +299,7 @@ const Post: React.FC<PostProp> = (props) => {
 			</ContentLeft>
 			<ContentRight>
 				{(() => {
-					if (true) { //check if is owner of post OR is moderator
+					if (props.owner===username || isAdmin) { //check if is owner of post OR is moderator
 						return <ContentRight>
 								<HoverText onClick={() => editPost(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
 							{(() => {
@@ -336,8 +340,7 @@ const PostList: React.FC<postListProp> = (props) => {
 						postId={props.postList[i].postId}
 						post={props.postList[i].post}
 						owner={props.postList[i].owner}
-						comments={props.postList[i].comments}
-						authentication={props.postList[i].authentication}/>
+						comments={props.postList[i].comments}/>
 		)
 	}
 
@@ -365,6 +368,7 @@ export const Home: React.FC = () => {
 	const [postList, setPostList] = useState(testList);
 	const [testId, setTestId] = useState(1);
 	const [dummyState, setDummyState] = useState(false);
+	const [logoutSuccess, setLogoutSuccess] = useState(false);
 	const [cookies, setCookie,removeCookie] = useCookies(['Authentication']);
 	const MyGrid = styled(Grid)`
 		padding-top: 20px !important;
@@ -404,10 +408,10 @@ export const Home: React.FC = () => {
 		const result = await axios({
           method: "post",
           baseURL: process.env.REACT_APP_BACKEND_URL,
-          url: "auth/logout",
+					url: "auth/logout",
 				});
-		removeCookie('Authentication');
-		setDummyState(!dummyState);
+		setLogoutSuccess(!logoutSuccess);
+		window.location.href = '/';
 	}
 
 	const writePost = async() => {
@@ -432,10 +436,11 @@ export const Home: React.FC = () => {
 		}		
 	}
 
-	// useEffect(() => {}, [dummyState])
+	useEffect(() => {}, [dummyState, logoutSuccess])
 
 	return (
 		<>
+			{logoutSuccess?<Redirect to="/login" /> : null }
 			<MyGrid>
 				<Grid.Column>
 					<Header>Welcome!</Header>
