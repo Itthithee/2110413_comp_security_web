@@ -29,11 +29,9 @@ export class AppController {
   @Post('auth/login')
   async login(@Body() req, @Res() response: Response) {
     const user: any = await this.authService.validateUser(req.username, req.password)
-    console.log(user)
     const token =  this.authService.login(user).access_token;
-    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=\
+    const cookie = `Authentication=${token}; Path=/; Max-Age=\
     ${jwtConstants.expiration}`;
-    console.log(cookie)
     response.setHeader('Set-Cookie', cookie);
     if (user === null) throw new UnauthorizedException();
     return response.send(user);
@@ -47,7 +45,7 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Post('auth/logout')
   async logOut(@Res() response: Response) {
-    response.setHeader('Set-Cookie', `Authentication=; HttpOnly; Path=/; Max-Age=0`);
+    response.setHeader('Set-Cookie', `Authentication=; Path=/; Max-Age=0`);
     return response.sendStatus(200);
   }
 }

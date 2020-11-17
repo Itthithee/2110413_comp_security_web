@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import styled from "styled-components";
 import {
   Grid,
@@ -10,8 +10,11 @@ import {
   Loader
 } from "semantic-ui-react";
 import { Redirect } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import axios from "axios";
+import {StateContext,User,UserDispatch} from "./StateKeeper";
+import { useCookies } from "react-cookie";
+import * as jwt from "jsonwebtoken";
+
 axios.defaults.withCredentials = true
 const Loading: React.FC = ({ loading }: any) => {
   if (loading) {
@@ -25,6 +28,7 @@ const Loading: React.FC = ({ loading }: any) => {
   }
 };
 export const Login: React.FC = () => {
+  const a = useContext(StateContext)
   const Label = styled.label`
     text-align: left;
   `;
@@ -35,6 +39,8 @@ export const Login: React.FC = () => {
   const password = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const {state,setState} = useContext(StateContext) as UserDispatch;
+  const [cookies ,setCookie] = useCookies(["Authentication"])
 
   const signIn = async() => {
     setLoading(true);
@@ -46,14 +52,25 @@ export const Login: React.FC = () => {
       if (password.current === null) {
         return
       }
-      let data ={ username: username?.current?.value, password: password?.current?.value }
-      const result = await axios({
-        method: "post",
-        baseURL: process.env.REACT_APP_BACKEND_URL,
-        url: "auth/login",
-        data: data
-      });
-      console.log(result)
+      {
+        let data ={ username: username?.current?.value, password: password?.current?.value }
+        const result = await axios({
+          method: "post",
+          baseURL: process.env.REACT_APP_BACKEND_URL,
+          url: "auth/login",
+          data: data
+        });
+        if(cookies && cookies.Authentication ){
+          const decrypt = jwt.decode(cookies.Authentication);
+          let {username,userId,isAdmin} = decrypt as User
+          console.log(decrypt)
+          if(username && userId){
+            setState(decrypt as User)
+          }
+        }
+        console.log(result)
+      }
+      
       // let cookiesOptions: object = { path: "/" };
       // if (process.env.NODE_ENV === "production") {
       //   cookiesOptions = { ...cookiesOptions, secure: true };
