@@ -8,6 +8,11 @@ To start docker compose :
 $ docker-compose up
 ```
 
+For rebuild container:
+```bash
+$ docker-compose up --build
+```
+
 To stop docker compose :
 
 ```bash
