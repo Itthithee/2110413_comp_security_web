@@ -10,25 +10,27 @@ services:
   back:
     build: ./backend
     container_name: backend
+    depends_on:
+     - db
     networks:
       - mynet
     ports:
       - 5000:5000
   db:
-    image: "mysql:latest"
+    image: mysql:5.7
     restart: always
     container_name: db
     volumes:
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./backend/mysql_data:/var/lib/mysql
+      - ./db:/db
+      - ./db/db_data:/var/lib/mysql
+    command: --init-file /db/init.sql
     environment:
-      MYSQL_USER: appuser
+      MySQL_ROOT_PASSWORD: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
       MYSQL_PASSWORD: testdb
       MYSQL_DB: comsecure
     expose:
       - "3306"
-    ports:
-      - 3500:3306
     networks:
       - mynet
 networks:
