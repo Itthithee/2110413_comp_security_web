@@ -10,8 +10,6 @@ services:
   back:
     build: ./backend
     container_name: backend
-    depends_on:
-     - db
     networks:
       - mynet
     ports:
