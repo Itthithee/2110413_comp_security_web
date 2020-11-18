@@ -3,7 +3,7 @@ USE comsecure;
 CREATE USER 'appuser'@'db' IDENTIFIED BY 'testdb';
 GRANT ALL PRIVILEGES ON comsecure.* TO 'appuser'@'db';
 
-CREATE TABLE IF NOT EXISTS User(
+CREATE TABLE IF NOT EXISTS user(
 	userId INT,
 	PRIMARY KEY (userId),
 	username VARCHAR(50) NOT NULL UNIQUE,
@@ -11,21 +11,22 @@ CREATE TABLE IF NOT EXISTS User(
 	isAdmin BOOLEAN NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Post(
+CREATE TABLE IF NOT EXISTS post(
 	postId INT,
 	PRIMARY KEY (postId),
 	text VARCHAR(255),
 	ownerId INT,
-	FOREIGN KEY (ownerId) REFERENCES User(userId)
+	FOREIGN KEY (ownerId) REFERENCES user(userId)
 );
 
-CREATE TABLE IF NOT EXISTS Comment(
+CREATE TABLE IF NOT EXISTS comment(
 	commentId INT,
 	PRIMARY KEY (commentId),
+	text VARCHAR,
 	ownerId INT,
-	FOREIGN KEY (ownerId) REFERENCES User(userId),
+	FOREIGN KEY (ownerId) REFERENCES user(userId),
 	postId INT,
-	FOREIGN KEY (postId) REFERENCES Post(postId)
+	FOREIGN KEY (postId) REFERENCES post(postId)
 );
 /*
 CREATE TRIGGER AddUser BEFORE INSERT ON User
@@ -42,5 +43,5 @@ FOR EACH ROW BEGIN
 END
 */
 
-INSERT INTO User (userId, username, password, isAdmin);
+INSERT INTO user (userId, username, password, isAdmin);
 VALUES (839403, 'Team', 'mypassword', FALSE), (903820, 'It', 'whosepassword', FALSE),(573920, 'Smooth', 'whatspassword', TRUE);
