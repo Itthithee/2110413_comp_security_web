@@ -3,35 +3,34 @@ import {
     Get,
     Param,
     Post,
-    Body
+    Body,
+    Delete
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './comments.dto';
+import { CreateCommentDto, EditCommentDto } from './comments.dto';
 import { timeStamp } from 'console';
-// import { ApiTags } from '@nestjs/swagger';
 
-// @ApiTags('Posts')
 @Controller('comments')
 export class CommentsController {
     constructor(private readonly commentService: CommentsService) { }
 
-    @Get(':commentId')
-    async getPostById(@Param('commentId') commentId: timeStamp) {
+    @Post()
+    async createComment(@Body() createCommentDto: CreateCommentDto) {
+        return this.commentService.createComment(createCommentDto);
+    }
+
+    @Get('/commentId/:commentId')
+    async getPostById(@Param('commentId') commentId: Date) {
         return this.commentService.getCommentById(commentId);
     }
 
-    @Get('id/:commentId')
-    async getById(@Param('commentId') commentId: timeStamp) {
-        return this.commentService.findById(commentId);
+    @Post('/edit/:commentId')
+    async editCommentById(@Body() editCommentDto: EditCommentDto, @Param('commentId') commentId: number) {
+        return this.commentService.editCommentById(editCommentDto, commentId);
     }
 
-    @Get('/')
-    async getAll() {
-        return this.commentService.getAll();
-    }
-
-    @Post('/')
-    async editById(@Body() commentDto: CreateCommentDto) {
-        return this.commentService.editById(commentDto);
+    @Delete('/delete/:commentId')
+    async deleteCommentById(@Param('commentId') commentId: number) {
+        return this.commentService.deleteCommentById(commentId);
     }
 }

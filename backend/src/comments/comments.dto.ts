@@ -4,8 +4,13 @@ import { timeStamp } from 'console';
 
 
 export class CreateCommentDto {
-    commentId: timeStamp;
+    commentId: number;
     text: string;
     owner: User;
     postId: Post;
+}
+
+export class EditCommentDto {
+    commentId: number;
+    text: string;
 }

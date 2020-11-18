@@ -1,37 +1,35 @@
 version: "3.8"
 services:
- front:
-  build: ./frontend
-  container_name: frontend
-  networks:
-   - mynet
-  ports:
-   - 4000:3000
- back:
-  build: ./backend
-  container_name: backend
-  networks:
-   - mynet
-  ports:
-   - 5000:5000
-db:
-   image: "mysql:latest"
-   restart: always
-   command: '--default-authentication-plugin=mysql_native_password'
-   expose:
-    - "3306"
-   environment:
-    MYSQL_PASSWORD: /run/secrets/mysql_pw
-    MYSQL_DATABASE: /run/secrets/mysql_db
-   secrets:
-    - mysql_pw
-    - mysql_db
-   networks:
-    - mynet
+  front:
+    build: ./frontend
+    container_name: frontend
+    networks:
+      - mynet
+    ports:
+      - 4000:3000
+  back:
+    build: ./backend
+    container_name: backend
+    networks:
+      - mynet
+    ports:
+      - 5000:5000
+  db:
+    image: mysql:5.7
+    restart: always
+    container_name: db
+    volumes:
+      - ./db:/db
+      - ./db/db_data:/var/lib/mysql
+    command: --init-file /db/init.sql
+    environment:
+      MySQL_ROOT_PASSWORD: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+      MYSQL_PASSWORD: testdb
+      MYSQL_DB: comsecure
+    expose:
+      - "3306"
+    networks:
+      - mynet
 networks:
- mynet: {}
-secrets:
- mysql_pw:
-  file:
- mysql_db:
-  file:
+  mynet: {}

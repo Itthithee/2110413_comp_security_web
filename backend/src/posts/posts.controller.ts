@@ -3,11 +3,13 @@ import {
     Get,
     Param,
     Post,
-    Body
+    Body,
+    Delete
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './posts.dto';
-import { timeStamp } from 'console';
+import { CreatePostDto, EditPostDto } from './posts.dto';
+import { time, timeStamp } from 'console';
+import { EditCommentDto } from 'src/comments/comments.dto';
 // import { ApiTags } from '@nestjs/swagger';
 
 // @ApiTags('Posts')
@@ -15,23 +17,33 @@ import { timeStamp } from 'console';
 export class PostsController {
     constructor(private readonly postService: PostsService) { }
 
-    @Get(':postId')
-    async getPostById(@Param('postId') postId: timeStamp) {
+    @Get('/postId/:postId')
+    async getPostById(@Param('postId') postId: number) {
         return this.postService.getPostById(postId);
     }
 
-    @Get('id/:postId')
-    async getById(@Param('postId') postId: timeStamp) {
-        return this.postService.findById(postId);
+    @Get('/allPosts')
+    async getAllPost() {
+        return this.postService.getAllPost();
     }
 
-    @Get('/')
-    async getAll() {
-        return this.postService.getAll();
+    @Post('/edit/:postId')
+    async editById(@Body() editPostDto: EditPostDto, @Param('postId') postId: number) {
+        return this.postService.editById(postId, editPostDto);
     }
 
     @Post('/')
-    async editById(@Body() postDto: CreatePostDto) {
-        return this.postService.editById(postDto);
+    async createPost(@Body() postDto: CreatePostDto) {
+        return this.postService.createPost(postDto);
+    }
+
+    @Delete('/delete/:userId')
+    async deletePostById(@Param('postId') postId: number) {
+        return this.postService.deletePost(postId);
+    }
+
+    @Get('/comments/:postId')
+    async getCommentsByPostId(@Param('postId') postId: number) {
+        return this.postService.getCommentsByPostId(postId);
     }
 }

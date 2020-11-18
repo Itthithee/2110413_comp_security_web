@@ -5,49 +5,64 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
 import { Post } from 'src/entities/post.entity';
-import { Repository } from 'typeorm';
-import { CreatePostDto } from './posts.dto';
+import { Comment } from 'src/entities/comment.entity';
+import { Repository, getRepository } from 'typeorm';
+import { CreatePostDto, EditPostDto } from './posts.dto';
 import { timeStamp } from 'console';
+import { User } from 'src/entities/user.entity';
+import { text } from 'express';
+import { EditCommentDto } from 'src/comments/comments.dto';
 
 @Injectable()
 export class PostsService {
-    private readonly posts: Post[];
-
     constructor(
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
-    ) {
-        this.posts = [
-            
-        ];
-    }
 
-    async findOne(postId: timeStamp): Promise<Post | undefined> {
-        return this.posts.find(post => post.postId === postId);
-    }
+        @InjectRepository(Comment)
+        private readonly commentRepository: Repository<Comment>,
 
-    async getPostById(postId: timeStamp): Promise<Post> {
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+    ) {}
+
+    async getPostById(postId: number): Promise<Post> {
         const res = await this.postRepository.findOne(postId);
         if (!res) throw new BadRequestException('Invalid Post ID');
         return res;
     }
 
-    async findById(postId: number): Promise<Post> {
-        const res = this.posts.find(post => post.postId === postId);
-        if (!res) throw new BadRequestException('Not Found');
+    async getAllPost(): Promise<Post[]> {
+        const res = await getRepository(Post).createQueryBuilder('post')
+        .select(["post.postId", "post.text", "user.username"])
+        .leftJoin("post.ownerId", "user")
+        .getMany();
+        if (!res) throw new BadRequestException('No Post Available');
         return res;
     }
 
-    async editById(postDto: CreatePostDto) {
-        const res = this.posts.find(post => post.postId === postDto.postId);
-        this.posts.push({
-            postId: postDto.postId,
-            text: postDto.text,
-            owner: postDto.owner
-        });
+    async editById(postId: number, editPostDto: EditPostDto) {
+        this.postRepository.update(postId, editPostDto);
     }
 
-    async getAll(): Promise<Post[]> {
-        return this.posts;
+    async createPost(createPostDto: CreatePostDto){
+        const res = this.postRepository.insert(createPostDto);
+        if (!res) throw new BadRequestException('Fail to create Post');
+        return res
+    }
+
+    async deletePost(postId : number){
+        const res = this.postRepository.delete(postId);
+        if (!res) throw new BadRequestException('Fail to delete Post');
+        return res
+    }
+
+    async getCommentsByPostId(postId: number) {
+        const res = getRepository(Comment).createQueryBuilder('comment')
+        .select(["comment.commentId", "comment.text", "user.username"])
+        .leftJoin("comment.ownerId", "user")
+        .getMany();
+        if (!res) throw new BadRequestException('Cannot find any comment');
+        return res
     }
 }

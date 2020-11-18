@@ -8,6 +8,11 @@ To start docker compose :
 $ docker-compose up
 ```
 
+For rebuild container:
+```bash
+$ docker-compose up --build
+```
+
 To stop docker compose :
 
 ```bash
@@ -20,3 +25,8 @@ $ docker-compose down
 ## PS2
 *** url : localhost:4000/ ***
 
+## PS3
+initialze 3 users to database
+1.  userId: 839403 username: 'Team'   password: 'mypassword'     isAdmin: FALSE
+2.  userId: 903820 username: 'It'     password: 'whosepassword'  isAdmin: FALSE
+3.  userId: 573920 username: 'Smooth' password: 'whatspassword'  isAdmin: TRUE
