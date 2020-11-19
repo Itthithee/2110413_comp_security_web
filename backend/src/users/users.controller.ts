@@ -4,10 +4,12 @@ import {
     Param,
     Post,
     Body,
-    BadRequestException
+    BadRequestException,
+    UseGuards
 } from '@nestjs/common';
 import { UsersService } from  './users.service';
 import { CreateUserDto } from './users.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -17,6 +19,8 @@ export class UsersController {
     async createUser(@Body() createUserDto: CreateUserDto){
         return this.userService.createUser(createUserDto);
     }
+
+    @UseGuards(AuthGuard('jwt'))
     @Get('/userId/:userId')
     async getUserById(@Param('userId') userId: number) {
         return this.userService.getUserById(userId);
