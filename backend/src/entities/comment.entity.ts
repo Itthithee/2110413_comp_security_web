@@ -21,7 +21,7 @@ export class Comment {
     @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId' })
     ownerId: User;
 
-    @ManyToOne(type => Post, { eager: true })
+    @ManyToOne(type => Post, { eager: true, onDelete: "CASCADE" })
     @JoinColumn({ name: 'postId', referencedColumnName: 'postId' })
     postId: Post;
 

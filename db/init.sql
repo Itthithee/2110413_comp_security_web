@@ -1,11 +1,11 @@
 CREATE DATABASE IF NOT EXISTS comsecure;
 
 USE comsecure;
-
 DROP USER IF EXISTS 'appuser'@'%';
 FLUSH PRIVILEGES;
 CREATE USER 'appuser'@'%' IDENTIFIED BY 'testdb';
 GRANT ALL PRIVILEGES ON comsecure.* TO 'appuser'@'%';
+FLUSH PRIVILEGES;
 
 CREATE TABLE IF NOT EXISTS user(
 	userId INT NOT NULL,

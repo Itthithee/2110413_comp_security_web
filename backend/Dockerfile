@@ -1,6 +1,8 @@
 FROM node:14.15.0-alpine
-WORKDIR /back
-COPY . /back
+WORKDIR /backend
+COPY ./package.json ./
 RUN yarn install
+COPY . .
 EXPOSE 5000
-CMD yarn start
+RUN yarn build
+CMD ["yarn", "run", "start:prod"]
