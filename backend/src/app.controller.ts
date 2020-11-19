@@ -14,7 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import {jwtConstants} from './auth/constants'
 import {Response} from 'express';
 
-@Controller()
+@Controller('/api')
 export class AppController {
   constructor(
     private readonly appService: AppService,
