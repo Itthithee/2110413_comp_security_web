@@ -5,8 +5,9 @@ import { Post } from 'src/entities/post.entity';
 import { User } from 'src/entities/user.entity';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service'
+import { AuthModule } from 'src/auth/auth.module';
 @Module({
-    imports: [TypeOrmModule.forFeature([Post, Comment, User])],
+    imports: [AuthModule,TypeOrmModule.forFeature([Post, Comment, User])],
     controllers: [PostsController],
     providers: [PostsService],
     exports: [PostsService]

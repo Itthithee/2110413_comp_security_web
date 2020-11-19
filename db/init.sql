@@ -34,4 +34,4 @@ CREATE TABLE IF NOT EXISTS comment(
 );
 
 INSERT INTO user (userId, username, password, isAdmin);
-VALUES (839403, 'Team', 'mypassword', 0), (903820, 'It', 'whosepassword', 0),(573920, 'Smooth', 'whatspassword', 1);
+VALUES (DEFAULT, 'Team', 'mypassword', 0), (DEFAULT, 'It', 'whosepassword', 0),(DEFAULT, 'Smooth', 'whatspassword', 1);
