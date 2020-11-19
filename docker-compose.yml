@@ -7,13 +7,19 @@ services:
       - mynet
     ports:
       - 4000:3000
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
   back:
     build: ./backend
     container_name: backend
     networks:
       - mynet
     ports:
-      - 5000:5000
+      - 5000:4000
+    volumes:
+      - ./backend:/backend
+      - /backend/node_modules
   db:
     image: mysql:5.7
     restart: always

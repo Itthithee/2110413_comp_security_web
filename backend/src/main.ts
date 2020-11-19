@@ -6,14 +6,14 @@ declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({
-    origin: "http://localhost:3000",
-    methods: 'GET,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept',
-    credentials: true,
-  });
+  // app.enableCors({
+  //   origin: "http://localhost:4000",
+  //   methods: 'GET,POST,DELETE',
+  //   allowedHeaders: 'Content-Type, Accept',
+  //   credentials: true,
+  // });
   app.use(cookieParser());
-  await app.listen(4000);
+  await app.listen(4000,"0.0.0.0");
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
