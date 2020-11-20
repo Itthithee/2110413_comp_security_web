@@ -38,7 +38,7 @@ export class CommentsService {
         this.commentRepository.delete(commentId);
     }
 
-    async checkOwnerRelation(userId : number,commentId: number): Promise<boolean> {
+    async checkOwnerRelation(userId : number,commentId: number) {
         const res = await this.commentRepository.findOne(commentId);
         if (!res) throw new BadRequestException('Invalid Comment ID');
         return res.ownerId?.userId===userId;

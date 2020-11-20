@@ -22,7 +22,7 @@ import { JwtModule } from '@nestjs/jwt';
           password: process.env.MYSQL_PASSWORD,
           database: process.env.MYSQL_DB,
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: false,//true,
+          synchronize: true,
           charset: 'utf8mb4_general_ci',
       }),
     }),

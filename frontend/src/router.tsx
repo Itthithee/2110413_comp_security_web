@@ -19,7 +19,7 @@ const useAuth = () => {
     const decrypt = jwt.decode(cookies.Authentication);
     let { username, userId, isAdmin } = decrypt as User;
     if (username && userId) {
-      console.log(decrypt);
+      // console.log(decrypt);
       return true;
     }
   }
