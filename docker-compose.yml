@@ -20,6 +20,11 @@ services:
     volumes:
       - ./backend:/backend
       - /backend/node_modules
+    environment: 
+      - MYSQL_URL=db
+      - MYSQL_USER=appuser
+      - MYSQL_PASSWORD=testdb
+      - MYSQL_DB=comsecure
   db:
     image: mysql:5.7
     restart: always
@@ -29,7 +34,7 @@ services:
       - ./db/db_data:/var/lib/mysql
     command: --init-file /db/init.sql
     environment:
-      MySQL_ROOT_PASSWORD: root
+      MySQL_ROOT_PASSWORD: P@sswordIsNu11
       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
       MYSQL_PASSWORD: testdb
       MYSQL_DB: comsecure

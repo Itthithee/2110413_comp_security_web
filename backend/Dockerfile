@@ -1,5 +1,6 @@
 FROM node:14.15.0-alpine
 WORKDIR /backend
+COPY yarn.lock ./
 COPY ./package.json ./
 RUN yarn install
 COPY . .

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt = require('bcrypt');
@@ -24,4 +24,10 @@ export class AuthService {constructor(
     return {
       access_token: this.jwtService.sign(payload),
     };
-  }}
+  }
+  decodeCookie(cookie :string){
+    if(!cookie) throw new BadRequestException()
+    return this.jwtService.decode(cookie)
+  }
+}
+

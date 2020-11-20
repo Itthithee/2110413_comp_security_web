@@ -26,10 +26,10 @@ export class PostsService {
         private readonly userRepository: Repository<User>,
     ) {}
 
-    async getPostById(postId: number): Promise<Post> {
+    async getPostById(postId: number): Promise<any> {
         const res = await this.postRepository.findOne(postId);
         if (!res) throw new BadRequestException('Invalid Post ID');
-        return res;
+        return {postId:res.postId,text:res.text,ownerId:res.ownerId?.userId}
     }
 
     async getAllPost(): Promise<Post[]> {
@@ -66,4 +66,11 @@ export class PostsService {
         if (!res) throw new BadRequestException('Cannot find any comment');
         return res
     }
+
+    async checkOwnerRelation(userId : number,postId: number): Promise<boolean> {
+        const res = await this.postRepository.findOne(postId);
+        if (!res) throw new BadRequestException('Invalid Post ID');
+        return res.ownerId?.userId===userId;
+    }
+
 }
