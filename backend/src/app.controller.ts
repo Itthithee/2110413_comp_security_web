@@ -16,22 +16,20 @@ import { jwtConstants } from './auth/constants'
 import { Response,Request } from 'express';
 import {Logger} from '@nestjs/common'
 import { CreateUserDto } from './users/users.dto';
-@Controller('/auth')
+import { JwtService } from '@nestjs/jwt';
+@Controller('/')
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private authService: AuthService) { }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
-
   @HttpCode(200)
-  @Post('/login')
-  async login(@Body() req: CreateUserDto, @Res() response: Response) {
-    Logger.log("ver2",req.toString())
-    if(req === null ) throw new UnauthorizedException();
+  @Post('auth/login')
+  async login(@Req() request : Request,@Body() req: CreateUserDto, @Res() response: Response) {
+    if(request.cookies?.Authentication){
+      let user : any= this.authService.decodeCookie(request?.cookies?.Authentication)
+      console.log("ver3",user)
+    }
     const user: any = await this.authService.validateUser(req.username, req.password)
     const token = this.authService.login(user).access_token;
     const cookie = `Authentication=${token}; Path=/; Max-Age=\
@@ -42,12 +40,12 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('/test')
+  @Get('auth/test')
   async sayHi() {
     return "hi";
   }
   @UseGuards(AuthGuard('jwt'))
-  @Post('/logout')
+  @Post('auth/logout')
   async logOut(@Res() response: Response) {
     response.setHeader('Set-Cookie', `Authentication=; Path=/; Max-Age=0`);
     return response.sendStatus(200);

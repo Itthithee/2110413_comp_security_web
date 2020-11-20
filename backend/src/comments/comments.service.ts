@@ -18,27 +18,29 @@ export class CommentsService {
         private readonly commentRepository: Repository<Comment>,
     ) {}
 
-    @UseGuards(AuthGuard('jwt'))
     async createComment(createCommentDto: CreateCommentDto) {
         const res = await this.commentRepository.insert(createCommentDto);    
         if (!res) throw new BadRequestException('Create Comment Failed');
         return res;
     }
 
-    @UseGuards(AuthGuard('jwt'))
-    async getCommentById(commentId: Date): Promise<Comment> {
+    async getCommentById(commentId: Date): Promise<any> {
         const res = await this.commentRepository.findOne(commentId);
         if (!res) throw new BadRequestException('Invalid Comment ID');
-        return res;
+        return {commentId:res.commentId,text:res.text,ownerId:res.ownerId,postId:res.postId};
     }
 
-    @UseGuards(AuthGuard('jwt'))
     async editCommentById(editCommentDto: EditCommentDto, commentId: number) {
         this.commentRepository.update(commentId, editCommentDto);
     }
 
-    @UseGuards(AuthGuard('jwt'))
     async deleteCommentById(commentId: number) {
         this.commentRepository.delete(commentId);
+    }
+
+    async checkOwnerRelation(userId : number,commentId: number): Promise<boolean> {
+        const res = await this.commentRepository.findOne(commentId);
+        if (!res) throw new BadRequestException('Invalid Comment ID');
+        return res.ownerId?.userId===userId;
     }
 }

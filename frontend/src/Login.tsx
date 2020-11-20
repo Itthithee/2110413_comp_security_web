@@ -66,12 +66,12 @@ export const Login: React.FC = () => {
         if(cookies && cookies.Authentication ){
           const decrypt = jwt.decode(cookies.Authentication);
           let {username,userId,isAdmin} = decrypt as User
-          console.log(decrypt)
+          // console.log(decrypt)
           if(username && userId){
             setState(decrypt as User)
           }
         }
-        console.log(result)
+        // console.log(result)
       }
       
       // let cookiesOptions: object = { path: "/" };

@@ -12,7 +12,7 @@ async function bootstrap() {
   // app.use(helmet())
   app.enableCors({
     origin : function(origin,callback){
-      console.log('origin :',origin)
+      // console.log('origin :',origin)
       callback(null,true)
     },
     methods: 'GET,POST,DELETE',
