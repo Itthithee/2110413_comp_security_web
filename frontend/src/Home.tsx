@@ -86,6 +86,9 @@ const Comment: React.FC<CommentProp> = (props) => {
 			data: {
 				commentId: props.commentId,
 				text: edittedComment.current?.value
+			},
+			headers: {
+				'Content-Type': 'application/json'
 			}
 		})
 		window.location.reload();
@@ -99,7 +102,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 		const result = await axios({
 			method: "delete",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/comments/delete/"+props.commentId
+			url: "/comments/delete/"+props.commentId,
 		})
 		window.location.reload();
 	}
@@ -195,7 +198,7 @@ const Post: React.FC<PostProp> = (props) => {
 			const result = await axios({
 				method: "get",
 				baseURL: process.env.REACT_APP_BACKEND_URL,
-				url: "/posts/comments/"+props.postId
+				url: "/posts/comments/"+props.postId,
 			})
 			let tempList = [];
 			for(let i=0;i<result.data.length;i++){
@@ -223,6 +226,9 @@ const Post: React.FC<PostProp> = (props) => {
 			data: {
 				postId: props.postId,
 				text: edittedPost.current?.value
+			},
+			headers: {
+				'Content-Type': 'application/json'
 			}
 		})
 		window.location.reload();
@@ -236,7 +242,7 @@ const Post: React.FC<PostProp> = (props) => {
 		const result = await axios({
 			method: "delete",
 			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/posts/delete/"+props.postId
+			url: "/posts/delete/"+props.postId,
 		})
 		window.location.reload();
 	}
@@ -256,6 +262,9 @@ const Post: React.FC<PostProp> = (props) => {
 					text: newComment.current?.value,
 					ownerId: userId,
 					postId: props.postId
+				},
+				headers: {
+					'Content-Type': 'application/json'
 				}
 			})
 			window.location.reload();
@@ -382,7 +391,7 @@ export const Home: React.FC = () => {
 			const result = await axios({
 				method: "get",
 				baseURL: process.env.REACT_APP_BACKEND_URL,
-				url: "/posts/allPosts"
+				url: "/posts/allPosts",
 			})
 			let tempList = [];
 			for(let i=0;i<result.data.length;i++){
@@ -423,6 +432,9 @@ export const Home: React.FC = () => {
 				data: {
 					text: newPost.current?.value,
 					ownerId: userId
+				},
+				headers: {
+					'Content-Type': 'application/json'
 				}
 			})
 			window.location.reload();
