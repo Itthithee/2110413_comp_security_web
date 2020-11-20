@@ -52,9 +52,20 @@ export class PostsService {
     }
 
     async deletePost(postId : number){
-        const res = this.postRepository.delete(postId);
-        if (!res) throw new BadRequestException('Fail to delete Post');
-        return res
+        try{
+            const res1 = await getRepository(Comment)
+                .createQueryBuilder()
+                .softDelete()
+                .from(Comment)
+                .where("comment.postId = :postId", { postId: postId})
+                .execute();
+            const res2 = this.postRepository.delete(postId);
+        }catch(e){
+            getRepository(Comment)
+            .createQueryBuilder()
+            .restore()
+            throw new BadRequestException('Fail to delete Post');
+        }
     }
 
     async getCommentsByPostId(postId: number) {
@@ -67,7 +78,7 @@ export class PostsService {
         return res
     }
 
-    async checkOwnerRelation(userId : number,postId: number): Promise<boolean> {
+    async checkOwnerRelation(userId : number,postId: number) {
         const res = await this.postRepository.findOne(postId);
         if (!res) throw new BadRequestException('Invalid Post ID');
         return res.ownerId?.userId===userId;
