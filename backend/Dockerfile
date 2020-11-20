@@ -5,7 +5,7 @@ COPY ./package.json ./
 RUN yarn install
 COPY . .
 # EXPOSE 5000
-RUN yarn build
+RUN yarn build --tsc
 CMD ["yarn", "run","start:prod"]
 
 # -WORKDIR /back

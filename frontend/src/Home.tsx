@@ -13,10 +13,8 @@ import {
 import { useCookies } from "react-cookie";
 import * as jwt from "jsonwebtoken";
 import { User } from "./StateKeeper";
-import { Redirect } from "react-router-dom";
-import { link } from "fs";
-import { setupMaster } from "cluster";
-import { unstable_renderSubtreeIntoContainer } from "react-dom";
+import {useAuth} from './router';
+import { Redirect } from "react-router";
 axios.defaults.withCredentials = true
 
 interface CommentProp{
@@ -99,18 +97,26 @@ const Comment: React.FC<CommentProp> = (props) => {
 	}
 
 	const confirmDeleteComment = async () => {
-		const result = await axios({
-			method: "delete",
-			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/comments/delete/"+props.commentId,
-		})
+		try{
+			const result = await axios({
+				method: "delete",
+				baseURL: process.env.REACT_APP_BACKEND_URL,
+				url: "/comments/delete/"+props.commentId,
+			})
+		}catch(e){
+
+		}
 		window.location.reload();
 	}
 	useEffect(() => {
-		const decrypt = jwt.decode(cookies.Authentication);
-		setUser(decrypt as User);
+		try{
+			const decrypt = jwt.decode(cookies.Authentication);
+			setUser(decrypt as User);
+		}catch(e){
+			window.location.reload();
+		}
+			
 	}, [isEditting, isDeleting]);
-
 	return <CommentCard>
 		<ContentLeft>
 			<Label style={{fontWeight: 'bold'}}>{ props.owner+':' }</Label>
@@ -132,7 +138,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 			})()}
 		</ContentLeft>
 		{(() => {
-			if (props.owner===user.username || user.isAdmin) { //check if is owner of comment OR is moderator
+			if (props.owner===user?.username || user?.isAdmin) { //check if is owner of comment OR is moderator
 				return <ContentRight>
 					<HoverText onClick={() => editComment(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
 					{(() => {
@@ -239,11 +245,15 @@ const Post: React.FC<PostProp> = (props) => {
 	}
 
 	const confirmDeletePost = async () => {
-		const result = await axios({
-			method: "delete",
-			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/posts/delete/"+props.postId,
-		})
+		try{
+			const result = await axios({
+				method: "delete",
+				baseURL: process.env.REACT_APP_BACKEND_URL,
+				url: "/posts/delete/"+props.postId,
+			})
+		}catch(e){
+			
+		}
 		window.location.reload();
 	}
 
@@ -252,29 +262,36 @@ const Post: React.FC<PostProp> = (props) => {
 			alert("New comment cannot be empty.");
 		}
 		else if (cookies && cookies.Authentication) {
-				const decrypt = jwt.decode(cookies.Authentication);
-				let {username,userId,isAdmin} = decrypt as User;
-				const result = await axios({
-				method: "post",
-				baseURL: process.env.REACT_APP_BACKEND_URL,
-				url: "/comments/",
-				data: {
-					text: newComment.current?.value,
-					ownerId: userId,
-					postId: props.postId
-				},
-				headers: {
-					'Content-Type': 'application/json'
+				try{
+					const decrypt = jwt.decode(cookies.Authentication);
+					let {username,userId,isAdmin} = decrypt as User;
+					const result = await axios({
+						method: "post",
+						baseURL: process.env.REACT_APP_BACKEND_URL,
+						url: "/comments/",
+						data: {
+							text: newComment.current?.value,
+							ownerId: userId,
+							postId: props.postId
+						},
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					})
+				}catch(e){
 				}
-			})
-			window.location.reload();
+				window.location.reload();
 		} else {
 			alert("Unknown error!");
 		}		
 	}
 	useEffect(() => {
-		const decrypt = jwt.decode(cookies.Authentication);
-		setUser(decrypt as User);
+		try{
+			const decrypt = jwt.decode(cookies.Authentication);
+			setUser(decrypt as User);
+		}catch(e){
+			window.location.reload();
+		}
 	}, [isEditting, isDeleting]);
 
 	return <Transition
@@ -305,7 +322,7 @@ const Post: React.FC<PostProp> = (props) => {
 			</ContentLeft>
 			<ContentRight>
 				{(() => {
-					if (props.owner===user.username || user.isAdmin) { //check if is owner of post OR is moderator
+					if (props.owner===user?.username || user?.isAdmin) { //check if is owner of post OR is moderator
 						return <ContentRight>
 								<HoverText onClick={() => editPost(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
 							{(() => {
@@ -423,20 +440,24 @@ export const Home: React.FC = () => {
 			alert("New post cannot be empty.");
 		}
 		else if (cookies && cookies.Authentication) {
-				const decrypt = jwt.decode(cookies.Authentication);
-				let {username,userId,isAdmin} = decrypt as User;
-				const result = await axios({
-				method: "post",
-				baseURL: process.env.REACT_APP_BACKEND_URL,
-				url: "/posts/",
-				data: {
-					text: newPost.current?.value,
-					ownerId: userId
-				},
-				headers: {
-					'Content-Type': 'application/json'
+				try{
+					const decrypt = jwt.decode(cookies.Authentication);
+					let {username,userId,isAdmin} = decrypt as User;
+					const result = await axios({
+						method: "post",
+						baseURL: process.env.REACT_APP_BACKEND_URL,
+						url: "/posts/",
+						data: {
+							text: newPost.current?.value,
+							ownerId: userId
+						},
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					})
+				}catch(e){
+
 				}
-			})
 			window.location.reload();
 		} else {
 			alert("Unknown error!");
