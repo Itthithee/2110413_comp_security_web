@@ -4,18 +4,25 @@ import {
     Param,
     Post,
     Body,
-    Delete
+    Delete,
+    UseGuards,
+    Req,
+    BadRequestException
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto, EditPostDto } from './posts.dto';
+import { AuthGuard } from '@nestjs/passport';
 import { time, timeStamp } from 'console';
 import { EditCommentDto } from 'src/comments/comments.dto';
+import { Request } from 'express';
+import { AuthService } from '../auth/auth.service'
 // import { ApiTags } from '@nestjs/swagger';
 
 // @ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
-    constructor(private readonly postService: PostsService) { }
+    constructor(private readonly postService: PostsService,
+        private authService: AuthService) { }
 
     @Get('/postId/:postId')
     async getPostById(@Param('postId') postId: number) {
@@ -26,19 +33,25 @@ export class PostsController {
     async getAllPost() {
         return this.postService.getAllPost();
     }
-
+    @UseGuards(AuthGuard('jwt'))
     @Post('/edit/:postId')
-    async editById(@Body() editPostDto: EditPostDto, @Param('postId') postId: number) {
+    async editById(@Req() request: Request, @Body() editPostDto: EditPostDto, @Param('postId') postId: number) {
+        let user: any = this.authService.decodeCookie(request ?.cookies ?.Authentication)
+        if (!this.postService.checkOwnerRelation(user.userId, postId)) new BadRequestException('Invalid User ID');
         return this.postService.editById(postId, editPostDto);
     }
 
+    @UseGuards(AuthGuard('jwt'))
     @Post('/')
     async createPost(@Body() postDto: CreatePostDto) {
         return this.postService.createPost(postDto);
     }
 
-    @Delete('/delete/:userId')
-    async deletePostById(@Param('postId') postId: number) {
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('/delete/:postId')
+    async deletePostById(@Req() request: Request, @Param('postId') postId: number) {
+        let user: any = this.authService.decodeCookie(request ?.cookies ?.Authentication)
+        if (!this.postService.checkOwnerRelation(user.userId, postId)) new BadRequestException('Invalid User ID');
         return this.postService.deletePost(postId);
     }
 
@@ -46,4 +59,5 @@ export class PostsController {
     async getCommentsByPostId(@Param('postId') postId: number) {
         return this.postService.getCommentsByPostId(postId);
     }
+
 }

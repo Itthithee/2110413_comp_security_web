@@ -26,10 +26,10 @@ export class PostsService {
         private readonly userRepository: Repository<User>,
     ) {}
 
-    async getPostById(postId: number): Promise<Post> {
+    async getPostById(postId: number): Promise<any> {
         const res = await this.postRepository.findOne(postId);
         if (!res) throw new BadRequestException('Invalid Post ID');
-        return res;
+        return {postId:res.postId,text:res.text,ownerId:res.ownerId?.userId}
     }
 
     async getAllPost(): Promise<Post[]> {
@@ -52,17 +52,36 @@ export class PostsService {
     }
 
     async deletePost(postId : number){
-        const res = this.postRepository.delete(postId);
-        if (!res) throw new BadRequestException('Fail to delete Post');
-        return res
+        try{
+            const res1 = await getRepository(Comment)
+                .createQueryBuilder()
+                .softDelete()
+                .from(Comment)
+                .where("comment.postId = :postId", { postId: postId})
+                .execute();
+            const res2 = this.postRepository.delete(postId);
+        }catch(e){
+            getRepository(Comment)
+            .createQueryBuilder()
+            .restore()
+            throw new BadRequestException('Fail to delete Post');
+        }
     }
 
     async getCommentsByPostId(postId: number) {
         const res = getRepository(Comment).createQueryBuilder('comment')
         .select(["comment.commentId", "comment.text", "user.username"])
+        .where("comment.postId = :postId", {postId: postId})
         .leftJoin("comment.ownerId", "user")
         .getMany();
         if (!res) throw new BadRequestException('Cannot find any comment');
         return res
     }
+
+    async checkOwnerRelation(userId : number,postId: number) {
+        const res = await this.postRepository.findOne(postId);
+        if (!res) throw new BadRequestException('Invalid Post ID');
+        return res.ownerId?.userId===userId;
+    }
+
 }

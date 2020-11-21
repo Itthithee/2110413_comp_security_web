@@ -10,17 +10,22 @@ import { Login } from "./Login";
 import { Home } from "./Home";
 import { StateProvider, StateContext, User, UserDispatch } from "./StateKeeper";
 import * as jwt from "jsonwebtoken";
-import { computeStyles } from "@popperjs/core";
 
-const useAuth = () => {
+export const useAuth = () => {
   const { state, setState } = useContext(StateContext) as UserDispatch;
-  const [cookies, setCookie] = useCookies(["Authentication"]);
+  const [cookies, setCookie,removeCookie] = useCookies(["Authentication"]);
   if (cookies && cookies.Authentication) {
-    const decrypt = jwt.decode(cookies.Authentication);
-    let { username, userId, isAdmin } = decrypt as User;
-    if (username && userId) {
-      console.log(decrypt);
-      return true;
+    try{
+      const decrypt = jwt.decode(cookies.Authentication);
+      let { username, userId, isAdmin } = decrypt as User;
+      if (username && userId) {
+        // console.log(decrypt);
+        return true;
+      }
+    }catch(e){
+      alert('something went wrong')
+      removeCookie("Authentication")
+      return false
     }
   }
   return false;

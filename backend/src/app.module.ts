@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersService } from './users/users.service';
+// import { UsersService } from './users/users.service';
 import {AuthModule} from './auth/auth.module'
-import { UsersController } from './users/users.controller';
+// import { UsersController } from './users/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { CommentsModule } from './comments/comments.module';
 import { PostsModule } from './posts/posts.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [

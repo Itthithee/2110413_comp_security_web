@@ -3,7 +3,8 @@ import {
     PrimaryGeneratedColumn,
     Column,
     JoinColumn,
-    ManyToOne
+    ManyToOne,
+    DeleteDateColumn
 } from 'typeorm';
 import { User } from './user.entity';
 import { Post } from './post.entity';
@@ -21,9 +22,11 @@ export class Comment {
     @JoinColumn({ name: 'ownerId', referencedColumnName: 'userId' })
     ownerId: User;
 
-    @ManyToOne(type => Post, { eager: true })
+    @ManyToOne(type => Post, { eager: true, onDelete: "CASCADE" })
     @JoinColumn({ name: 'postId', referencedColumnName: 'postId' })
     postId: Post;
 
+    @DeleteDateColumn()
+    deletedAt?: Date;
 }
 

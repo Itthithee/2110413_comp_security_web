@@ -1,13 +1,15 @@
 
 import {
     Injectable,
-    BadRequestException
+    BadRequestException,
+    UseGuards
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
 import { Comment } from 'src/entities/comment.entity';
 import { Repository } from 'typeorm';
 import { CreateCommentDto, EditCommentDto } from './comments.dto';
 import { timeStamp } from 'console';
+import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class CommentsService {
@@ -22,10 +24,10 @@ export class CommentsService {
         return res;
     }
 
-    async getCommentById(commentId: Date): Promise<Comment> {
+    async getCommentById(commentId: Date): Promise<any> {
         const res = await this.commentRepository.findOne(commentId);
         if (!res) throw new BadRequestException('Invalid Comment ID');
-        return res;
+        return {commentId:res.commentId,text:res.text,ownerId:res.ownerId,postId:res.postId};
     }
 
     async editCommentById(editCommentDto: EditCommentDto, commentId: number) {
@@ -34,5 +36,11 @@ export class CommentsService {
 
     async deleteCommentById(commentId: number) {
         this.commentRepository.delete(commentId);
+    }
+
+    async checkOwnerRelation(userId : number,commentId: number) {
+        const res = await this.commentRepository.findOne(commentId);
+        if (!res) throw new BadRequestException('Invalid Comment ID');
+        return res.ownerId?.userId===userId;
     }
 }

@@ -11,6 +11,10 @@ import {
 	Header,
 } from "semantic-ui-react"
 import { useCookies } from "react-cookie";
+import * as jwt from "jsonwebtoken";
+import { User } from "./StateKeeper";
+import {useAuth} from './router';
+import { Redirect } from "react-router";
 axios.defaults.withCredentials = true
 
 interface CommentProp{
@@ -55,6 +59,9 @@ margin: 10px;
 const Comment: React.FC<CommentProp> = (props) => {
 	const [isEditting, setIsEditting] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [user, setUser] = useState({} as User);
+	const [cookies, setCookie] = useCookies(['Authentication']);
+
 	const CommentCard = styled(Card)`
 		width: 100% !important;
 	`;
@@ -77,9 +84,12 @@ const Comment: React.FC<CommentProp> = (props) => {
 			data: {
 				commentId: props.commentId,
 				text: edittedComment.current?.value
+			},
+			headers: {
+				'Content-Type': 'application/json'
 			}
 		})
-		setIsEditting(!isEditting);
+		window.location.reload();
 	}
 
 	const deleteComment = (deleting: any) => {
@@ -87,15 +97,26 @@ const Comment: React.FC<CommentProp> = (props) => {
 	}
 
 	const confirmDeleteComment = async () => {
-		const result = await axios({
-			method: "delete",
-			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/comments/delete/"+props.commentId
-		})
-		setIsDeleting(!isDeleting);
-	}
-	useEffect(() => {}, [isEditting, isDeleting]);
+		try{
+			const result = await axios({
+				method: "delete",
+				baseURL: process.env.REACT_APP_BACKEND_URL,
+				url: "/comments/delete/"+props.commentId,
+			})
+		}catch(e){
 
+		}
+		window.location.reload();
+	}
+	useEffect(() => {
+		try{
+			const decrypt = jwt.decode(cookies.Authentication);
+			setUser(decrypt as User);
+		}catch(e){
+			window.location.reload();
+		}
+			
+	}, [isEditting, isDeleting]);
 	return <CommentCard>
 		<ContentLeft>
 			<Label style={{fontWeight: 'bold'}}>{ props.owner+':' }</Label>
@@ -117,7 +138,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 			})()}
 		</ContentLeft>
 		{(() => {
-			if (true) { //check if is owner of comment OR is moderator
+			if (props.owner===user?.username || user?.isAdmin) { //check if is owner of comment OR is moderator
 				return <ContentRight>
 					<HoverText onClick={() => editComment(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
 					{(() => {
@@ -141,7 +162,8 @@ const CommentList: React.FC<CommentListProp> = (props) => {
 	let elements = [];
 	for(let i=0;i<props.comments.length;i++){
 		elements.push(
-			<Comment 	commentId={props.comments[i].commentId}
+			<Comment 	key={props.comments[i].commentId}
+								commentId={props.comments[i].commentId}
 								comment={props.comments[i].comment} 
 								owner={props.comments[i].owner}/>
 		)
@@ -165,6 +187,9 @@ const Post: React.FC<PostProp> = (props) => {
 	const [isEditting, setIsEditting] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [commentList, setCommentList] = useState(testList);
+	const [user, setUser] = useState({} as User);
+	const [cookies, setCookies] = useCookies(['Authentication']);
+	
 	const PostCard = styled(Card)`
 		width: 60% !important;
 	`;
@@ -179,7 +204,7 @@ const Post: React.FC<PostProp> = (props) => {
 			const result = await axios({
 				method: "get",
 				baseURL: process.env.REACT_APP_BACKEND_URL,
-				url: "/posts/comments/"+props.postId
+				url: "/posts/comments/"+props.postId,
 			})
 			let tempList = [];
 			for(let i=0;i<result.data.length;i++){
@@ -207,8 +232,12 @@ const Post: React.FC<PostProp> = (props) => {
 			data: {
 				postId: props.postId,
 				text: edittedPost.current?.value
+			},
+			headers: {
+				'Content-Type': 'application/json'
 			}
 		})
+		window.location.reload();
 	}
 
 	const deletePost = (deleting: any) => {
@@ -216,27 +245,54 @@ const Post: React.FC<PostProp> = (props) => {
 	}
 
 	const confirmDeletePost = async () => {
-		const result = await axios({
-			method: "delete",
-			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/posts/delete/"+props.postId
-		})
-		setIsDeleting(!isDeleting);
+		try{
+			const result = await axios({
+				method: "delete",
+				baseURL: process.env.REACT_APP_BACKEND_URL,
+				url: "/posts/delete/"+props.postId,
+			})
+		}catch(e){
+			
+		}
+		window.location.reload();
 	}
 
 	const writeComment = async () => {
-		const result = await axios({
-			method: "post",
-			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/comments/",
-			data: {
-				text: newComment.current?.value,
-				owner: null
-			}
-		})
-		setIsEditting(!isEditting);
+		if (!newComment.current?.value || newComment.current?.value=="") {
+			alert("New comment cannot be empty.");
+		}
+		else if (cookies && cookies.Authentication) {
+				try{
+					const decrypt = jwt.decode(cookies.Authentication);
+					let {username,userId,isAdmin} = decrypt as User;
+					const result = await axios({
+						method: "post",
+						baseURL: process.env.REACT_APP_BACKEND_URL,
+						url: "/comments/",
+						data: {
+							text: newComment.current?.value,
+							ownerId: userId,
+							postId: props.postId
+						},
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					})
+				}catch(e){
+				}
+				window.location.reload();
+		} else {
+			alert("Unknown error!");
+		}		
 	}
-	useEffect(() => {}, [isEditting, isDeleting]);
+	useEffect(() => {
+		try{
+			const decrypt = jwt.decode(cookies.Authentication);
+			setUser(decrypt as User);
+		}catch(e){
+			window.location.reload();
+		}
+	}, [isEditting, isDeleting]);
 
 	return <Transition
 	mountOnShow
@@ -266,7 +322,7 @@ const Post: React.FC<PostProp> = (props) => {
 			</ContentLeft>
 			<ContentRight>
 				{(() => {
-					if (true) { //check if is owner of post OR is moderator
+					if (props.owner===user?.username || user?.isAdmin) { //check if is owner of post OR is moderator
 						return <ContentRight>
 								<HoverText onClick={() => editPost(!isEditting)}>{isEditting?"Cancel": "Edit"}</HoverText>
 							{(() => {
@@ -303,7 +359,8 @@ const PostList: React.FC<postListProp> = (props) => {
 	let elements = [];
 	for(let i=0;i<props.postList.length;i++){
 		elements.push(
-			<Post postId={props.postList[i].postId}
+			<Post key={props.postList[i].postId}
+						postId={props.postList[i].postId}
 						post={props.postList[i].post}
 						owner={props.postList[i].owner}
 						comments={props.postList[i].comments}/>
@@ -326,17 +383,22 @@ export const Home: React.FC = () => {
 		"comments": [{
 			"commentId": 1,
 			"comment": "comment1",
-			"owner": "user2"
-		}]
+			"owner": "user2",
+			"authentication": "none"
+		}],
+		"authentication": "none"
 	}];
 	const [postList, setPostList] = useState(testList);
 	const [testId, setTestId] = useState(1);
-	const [dummyState, setDummyState] = useState(false);
-	const [cookies, setCookie,removeCookie] = useCookies(['token']);
+	const [logoutSuccess, setLogoutSuccess] = useState(false);
+	const [cookies, setCookie,removeCookie] = useCookies(['Authentication']);
 	const MyGrid = styled(Grid)`
 		padding-top: 20px !important;
 	`;
 	const NewPostCard = styled(Card)`
+		width: 60% !important;
+	`;
+	const PostCard = styled(Card)`
 		width: 60% !important;
 	`;
 	const newPost = useRef<HTMLInputElement>(null);
@@ -346,7 +408,7 @@ export const Home: React.FC = () => {
 			const result = await axios({
 				method: "get",
 				baseURL: process.env.REACT_APP_BACKEND_URL,
-				url: "/posts/allPosts"
+				url: "/posts/allPosts",
 			})
 			let tempList = [];
 			for(let i=0;i<result.data.length;i++){
@@ -354,7 +416,8 @@ export const Home: React.FC = () => {
 					postId: result.data[i].postId,
 					post: result.data[i].text,
 					owner: result.data[i].ownerId.username,
-					comments: []};
+					comments: [],
+					authentication: cookies.Authentication};
 				tempList.push(temp);
 			}
 			setPostList(tempList);
@@ -367,22 +430,41 @@ export const Home: React.FC = () => {
 		const result = await axios({
           method: "post",
           baseURL: process.env.REACT_APP_BACKEND_URL,
-          url: "auth/logout",
-        })
+					url: "auth/logout",
+				});
+		window.location.href = '/';
 	}
 
 	const writePost = async() => {
-		const result = await axios({
-			method: "post",
-			baseURL: process.env.REACT_APP_BACKEND_URL,
-			url: "/posts/",
-			data: {
-				text: newPost.current?.value,
-				owner: null
-			}
-		})
-		setDummyState(!dummyState);
+		if (!newPost.current?.value || newPost.current?.value=="") {
+			alert("New post cannot be empty.");
+		}
+		else if (cookies && cookies.Authentication) {
+				try{
+					const decrypt = jwt.decode(cookies.Authentication);
+					let {username,userId,isAdmin} = decrypt as User;
+					const result = await axios({
+						method: "post",
+						baseURL: process.env.REACT_APP_BACKEND_URL,
+						url: "/posts/",
+						data: {
+							text: newPost.current?.value,
+							ownerId: userId
+						},
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					})
+				}catch(e){
+
+				}
+			window.location.reload();
+		} else {
+			alert("Unknown error!");
+		}		
 	}
+
+	useEffect(() => {}, [logoutSuccess])
 
 	return (
 		<>

@@ -58,17 +58,20 @@ export const Login: React.FC = () => {
           method: "post",
           baseURL: process.env.REACT_APP_BACKEND_URL,
           url: "auth/login",
-          data: data
+          data: data,
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
         if(cookies && cookies.Authentication ){
           const decrypt = jwt.decode(cookies.Authentication);
           let {username,userId,isAdmin} = decrypt as User
-          console.log(decrypt)
+          // console.log(decrypt)
           if(username && userId){
             setState(decrypt as User)
           }
         }
-        console.log(result)
+        // console.log(result)
       }
       
       // let cookiesOptions: object = { path: "/" };
