@@ -144,7 +144,7 @@ const Comment: React.FC<CommentProp> = (props) => {
 					{(() => {
 						if (isDeleting) {
 							return <>
-								<Label>Are you sore you want to delete this comment?</Label>
+								<Label>Are you sure you want to delete this comment?</Label>
 								<HoverText onClick={() => confirmDeleteComment()}>Yes</HoverText>
 								<HoverText onClick={() => deleteComment(!isDeleting)}>No</HoverText>
 							</>
@@ -328,7 +328,7 @@ const Post: React.FC<PostProp> = (props) => {
 							{(() => {
 								if (isDeleting) {
 									return <>
-										<Label>Are you sore you want to delete this post?</Label>
+										<Label>Are you sure you want to delete this post?</Label>
 										<HoverText onClick={() => confirmDeletePost()}>Yes</HoverText>
 										<HoverText onClick={() => deletePost(!isDeleting)}>No</HoverText>
 									</>
