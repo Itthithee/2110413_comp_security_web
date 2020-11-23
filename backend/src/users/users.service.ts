@@ -18,6 +18,7 @@ export class UsersService {
     ) {}
 
     async createUser(createUserDto: CreateUserDto){
+        if(createUserDto.password.length < 8 ) return new BadRequestException('password need at least 8 characters');
         const hashedPass = await bcrypt.hash(createUserDto.password, 10);
         createUserDto.password = hashedPass;
         const res = this.userRepository.insert(createUserDto);
