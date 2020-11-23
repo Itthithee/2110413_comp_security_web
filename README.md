@@ -23,10 +23,12 @@ $ docker-compose down
 *** Don't panic if you see a bunch of warning when you first build container (most of it is about dependency) ***
 
 ## PS2
-*** url : localhost:4000/ ***
+*** url : localhost:8000/ ***
 
 ## PS3
-initialze 3 users to database
-1.  userId: 839403 username: 'Team'   password: 'mypassword'     isAdmin: FALSE
-2.  userId: 903820 username: 'It'     password: 'whosepassword'  isAdmin: FALSE
-3.  userId: 573920 username: 'Smooth' password: 'whatspassword'  isAdmin: TRUE
+to initialze users, you can do it by try using following method
+1.  install curl
+2.  using this command
+curl -X POST -H "Content-Type: application/json" -d '{"username": "Admin", "password": "1234", "isAdmin": true}' http://localhost:8000/api/users
+PS. You can try it on Postman or other tool.
+PS2. isAdmin is boolean, please dont send it as string.
