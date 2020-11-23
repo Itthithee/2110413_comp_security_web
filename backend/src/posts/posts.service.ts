@@ -46,6 +46,7 @@ export class PostsService {
     }
 
     async createPost(createPostDto: CreatePostDto){
+        console.log(createPostDto)
         const res = this.postRepository.insert(createPostDto);
         if (!res) throw new BadRequestException('Fail to create Post');
         return res

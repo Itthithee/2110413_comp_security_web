@@ -15,6 +15,7 @@ import { timeStamp } from 'console';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
 import { Request } from 'express';
+import { User } from 'src/entities/user.entity';
 
 
 @Controller('comments')
@@ -24,8 +25,12 @@ export class CommentsController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post()
-    async createComment(@Body() createCommentDto: CreateCommentDto) {
-        return this.commentService.createComment(createCommentDto);
+    async createComment(@Req() request: Request, @Body() createCommentDto: CreateCommentDto) {
+        let user: any = this.authService.decodeCookie(request ?.cookies ?.Authentication)
+        if (!user && !user.userId) new BadRequestException('Invalid User ID');
+        let { userId }: User = user
+        let payload: any = { text: createCommentDto.text,postId:createCommentDto.postId, ownerId:userId}
+        return this.commentService.createComment(payload);
     }
 
     @Get('/commentId/:commentId')

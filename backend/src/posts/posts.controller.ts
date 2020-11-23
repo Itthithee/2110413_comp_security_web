@@ -16,6 +16,7 @@ import { time, timeStamp } from 'console';
 import { EditCommentDto } from 'src/comments/comments.dto';
 import { Request } from 'express';
 import { AuthService } from '../auth/auth.service'
+import { User } from 'src/entities/user.entity';
 // import { ApiTags } from '@nestjs/swagger';
 
 // @ApiTags('Posts')
@@ -43,8 +44,12 @@ export class PostsController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('/')
-    async createPost(@Body() postDto: CreatePostDto) {
-        return this.postService.createPost(postDto);
+    async createPost(@Req() request: Request, @Body() postDto: CreatePostDto) {
+        let user: any = this.authService.decodeCookie(request ?.cookies ?.Authentication)
+        if (!user && !user.userId) new BadRequestException('Invalid User ID');
+        let { userId }: User = user
+        let payload: any = { text: postDto.text, ownerId:userId}
+        return this.postService.createPost(payload);
     }
 
     @UseGuards(AuthGuard('jwt'))
